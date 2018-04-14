@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">BakingApp</string>
-    <string name="can_not_get_recipies">Can not get a recipe list</string>
+    <string name="can_not_get_recipes">Can not get a recipe list</string>
 </resources>
