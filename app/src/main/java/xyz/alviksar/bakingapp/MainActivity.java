@@ -25,18 +25,12 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-        mRecyclerView = findViewById(R.id.my_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
 
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -52,16 +46,22 @@ public class MainActivity extends AppCompatActivity {
                 List<Recipe> recipeList = response.body();
 
                 mRecyclerView.setAdapter(new RecipeAdapter(MainActivity.this, recipeList));
+
             }
 
             @Override
             public void onFailure(Call<List<Recipe>> call, Throwable t) {
-                String s = t.getMessage();
-                Log.e(TAG, s);
+                Log.e(TAG, t.getMessage());
                 Toast.makeText(MainActivity.this, R.string.can_not_get_recipes,
                         Toast.LENGTH_LONG).show();
             }
+
         });
 
+        mRecyclerView = findViewById(R.id.my_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
     }
 }
