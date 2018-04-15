@@ -22,7 +22,19 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     private Context mContext;
     private List<Recipe> mDataset;
 
-    static class RecipeViewHolder extends RecyclerView.ViewHolder {
+    /**
+     * The interface to handle clicks on items within this Adapter
+     */
+    public interface RecipeAdapterOnClickHandler {
+        void onClick(Recipe recipe);
+    }
+
+    /**
+     * The member that receives onClick messages
+     */
+    final private RecipeAdapterOnClickHandler mClickHandler;
+
+    class RecipeViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         private TextView mNameTextView;
         private ImageView mPhoto;
@@ -31,12 +43,30 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             super(v);
             mNameTextView = itemView.findViewById(R.id.tv_recipe_name);
             mPhoto = itemView.findViewById(R.id.iv_recipe);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (mDataset != null) {
+                        Recipe recipe = mDataset.get(position);
+                        if (recipe != null) {
+                            mClickHandler.onClick(recipe);
+                        }
+                    }
+                }
+            });
         }
     }
 
-    public RecipeAdapter(Context context, List<Recipe> data) {
+    /**
+     * Creates a RecipeAdapter.
+     *
+     * @param context      Used to talk to the UI and app resources
+     * @param clickHandler Used to assign onClick receiver
+     */
+    public RecipeAdapter(Context context, RecipeAdapterOnClickHandler clickHandler) {
         mContext = context;
-        mDataset = data;
+        mClickHandler = clickHandler;
     }
 
     // Create new views (invoked by the layout manager)

@@ -1,6 +1,7 @@
 package xyz.alviksar.bakingapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Parcelable;
@@ -28,16 +29,15 @@ import xyz.alviksar.bakingapp.model.Recipe;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String BUNDLE_RECYCLER_LAYOUT = "MainActivity.mRecyclerView.layout";
     private Parcelable mSavedRecyclerLayoutState = null;
 
-
-    private static final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net";
     // https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json
+    private static final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net";
 
     // The recipe card width on screen in inches
     private static final float CARD_WIDTH_INCHES = 1.4f;
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mRecipeAdapter = new RecipeAdapter(MainActivity.this, null);
+        mRecipeAdapter = new RecipeAdapter(MainActivity.this, this);
         mRecyclerView.setAdapter(mRecipeAdapter);
 
         Retrofit.Builder builder = new Retrofit.Builder()
@@ -172,5 +172,13 @@ public class MainActivity extends AppCompatActivity {
         if (mSavedRecyclerLayoutState != null) {
             mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
         }
+    }
+
+    @Override
+    public void onClick(Recipe recipe) {
+        Toast.makeText(MainActivity.this, recipe.getName(), Toast.LENGTH_LONG).show();
+//        Intent movieDetailIntent = new Intent(MainActivity.this, DetailActivity.class);
+//        movieDetailIntent.putExtra(getString(R.string.movie_parcel_key), movie);
+//        startActivity(movieDetailIntent);
     }
 }
