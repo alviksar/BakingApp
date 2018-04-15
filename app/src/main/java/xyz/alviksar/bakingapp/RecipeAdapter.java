@@ -1,6 +1,7 @@
 package xyz.alviksar.bakingapp;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -73,7 +74,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        if (mDataset != null) return mDataset.size();
+        else return 0;
+    }
+
+    void swapData(List<Recipe> data) {
+        mDataset = data;
+        // After the new Cursor is set, call notifyDataSetChanged
+        notifyDataSetChanged();
     }
 }
 
