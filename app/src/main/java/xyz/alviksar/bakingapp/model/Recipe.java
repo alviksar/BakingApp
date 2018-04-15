@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Recipe implements Parcelable
 {
+    public static final String PARCEBLE_KEY = "Recipe";
 
     @SerializedName("id")
     @Expose
@@ -49,10 +50,10 @@ public class Recipe implements Parcelable
     protected Recipe(Parcel in) {
         this.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
         this.name = ((String) in.readValue((String.class.getClassLoader())));
-        in.readList(this.ingredients, (Ingredient.class.getClassLoader()));
-        in.readList(this.steps, (Step.class.getClassLoader()));
-        this.servings = ((Integer) in.readValue((Integer.class.getClassLoader())));
-        this.image = ((String) in.readValue((String.class.getClassLoader())));
+// TODO: !!!       in.readList(this.ingredients, (Ingredient.class.getClassLoader()));
+//        in.readList(this.steps, (Step.class.getClassLoader()));
+//        this.servings = ((Integer) in.readValue((Integer.class.getClassLoader())));
+//        this.image = ((String) in.readValue((String.class.getClassLoader())));
     }
 
     /**

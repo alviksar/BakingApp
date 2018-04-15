@@ -176,9 +176,9 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     @Override
     public void onClick(Recipe recipe) {
-        Toast.makeText(MainActivity.this, recipe.getName(), Toast.LENGTH_LONG).show();
-//        Intent movieDetailIntent = new Intent(MainActivity.this, DetailActivity.class);
-//        movieDetailIntent.putExtra(getString(R.string.movie_parcel_key), movie);
-//        startActivity(movieDetailIntent);
+     //   Toast.makeText(MainActivity.this, recipe.getName(), Toast.LENGTH_LONG).show();
+        Intent stepListIntent = new Intent(MainActivity.this, StepListActivity.class);
+        stepListIntent.putExtra(Recipe.PARCEBLE_KEY, recipe);
+        startActivity(stepListIntent);
     }
 }
