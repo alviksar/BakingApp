@@ -3,6 +3,8 @@ package xyz.alviksar.bakingapp;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -29,6 +31,10 @@ import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private static final String BUNDLE_RECYCLER_LAYOUT = "MainActivity.mRecyclerView.layout";
+    private Parcelable mSavedRecyclerLayoutState = null;
+
 
     private static final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net";
     // https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json
@@ -85,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
                 List<Recipe> recipeList = response.body();
                 mRecipeAdapter.swapData(recipeList);
-//                mRecyclerView.setAdapter(new RecipeAdapter(MainActivity.this, recipeList));
+                showData();
             }
 
             @Override
@@ -105,8 +111,32 @@ public class MainActivity extends AppCompatActivity {
         if (networkInfo == null || !networkInfo.isConnected()) {
             // Set no connection error message
             showErrorMessage(R.string.no_connection_error_msg);
+        } else {
+            showLoading();
         }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, mRecyclerView.getLayoutManager().onSaveInstanceState());
+        super.onSaveInstanceState(outState);
+    }
+
+
+    /**
+     * https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
+     */
+    @Override
+    public void onRestoreInstanceState(@Nullable Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(BUNDLE_RECYCLER_LAYOUT))
+                mSavedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
+        }
+    }
+
 
     /**
      * This method will hide everything except the TextView error message
@@ -118,5 +148,29 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setVisibility(View.GONE);
         mErrorMessage.setVisibility(View.VISIBLE);
         mErrorMessage.setText(msgResId);
+    }
+
+    /**
+     * This method will make the loading indicator visible and hide the RecyclerView and error
+     * message.
+     */
+    private void showLoading() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+        mErrorMessage.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * This method will make the RecyclerView visible and hide the error message and
+     * loading indicator.
+     */
+    private void showData() {
+        mLoadingIndicator.setVisibility(View.GONE);
+        mErrorMessage.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+        // Restore position upon orientation change
+        if (mSavedRecyclerLayoutState != null) {
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
+        }
     }
 }
