@@ -1,15 +1,16 @@
 
 package xyz.alviksar.bakingapp.model;
 
-import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Recipe implements Parcelable
-{
+import java.util.ArrayList;
+import java.util.List;
+
+public class Recipe implements Parcelable {
     public static final String PARCEBLE_KEY = "Recipe";
 
     @SerializedName("id")
@@ -34,7 +35,7 @@ public class Recipe implements Parcelable
 
 
         @SuppressWarnings({
-            "unchecked"
+                "unchecked"
         })
         public Recipe createFromParcel(Parcel in) {
             return new Recipe(in);
@@ -44,27 +45,27 @@ public class Recipe implements Parcelable
             return (new Recipe[size]);
         }
 
-    }
-    ;
+    };
 
     protected Recipe(Parcel in) {
+        this.ingredients = new ArrayList<Ingredient>();
+        this.steps = new ArrayList<Step>();
+
         this.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
         this.name = ((String) in.readValue((String.class.getClassLoader())));
-// TODO: !!!       in.readList(this.ingredients, (Ingredient.class.getClassLoader()));
-//        in.readList(this.steps, (Step.class.getClassLoader()));
-//        this.servings = ((Integer) in.readValue((Integer.class.getClassLoader())));
-//        this.image = ((String) in.readValue((String.class.getClassLoader())));
+        in.readList(this.ingredients, (Ingredient.class.getClassLoader()));
+        in.readList(this.steps, (Step.class.getClassLoader()));
+        this.servings = ((Integer) in.readValue((Integer.class.getClassLoader())));
+        this.image = ((String) in.readValue((String.class.getClassLoader())));
     }
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public Recipe() {
     }
 
     /**
-     * 
      * @param ingredients
      * @param id
      * @param servings
@@ -140,7 +141,7 @@ public class Recipe implements Parcelable
     }
 
     public int describeContents() {
-        return  0;
+        return 0;
     }
 
 }

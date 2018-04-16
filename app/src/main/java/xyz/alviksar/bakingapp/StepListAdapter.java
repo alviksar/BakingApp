@@ -6,11 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
 import xyz.alviksar.bakingapp.StepListFragment.OnListFragmentInteractionListener;
 import xyz.alviksar.bakingapp.model.Step;
-
-
-import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Step} and makes a call to the
@@ -18,12 +17,16 @@ import java.util.List;
  */
 public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHolder> {
 
-    private final List<Step> mSteps;
+    private List<Step> mSteps;
     private final OnListFragmentInteractionListener mListener;
 
     public StepListAdapter(List<Step> items, OnListFragmentInteractionListener listener) {
         mSteps = items;
         mListener = listener;
+    }
+
+    public void swapData(List<Step> data) {
+        mSteps = data;
     }
 
     @Override
@@ -35,8 +38,11 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mSteps.get(position);
-        holder.mIdView.setText(mSteps.get(position).getId());
+        Step step = mSteps.get(position);
+        if (step.getId() > 0)
+            holder.mIdView.setText(String.format("%d.", step.getId()));
+        else
+            holder.mIdView.setText("");
         holder.mContentView.setText(mSteps.get(position).getShortDescription());
 
 //        holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -60,14 +66,11 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public Step mItem;
 
         public ViewHolder(View view) {
             super(view);
-            mView = view;
             mIdView = (TextView) view.findViewById(R.id.item_number);
             mContentView = (TextView) view.findViewById(R.id.tv_description);
         }

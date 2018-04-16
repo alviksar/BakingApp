@@ -22,6 +22,7 @@ public class StepListFragment extends Fragment {
 
     private Recipe mRecipe;
     private OnListFragmentInteractionListener mListener;
+    private StepListAdapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -30,8 +31,6 @@ public class StepListFragment extends Fragment {
     public StepListFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static StepListFragment newInstance(Recipe recipe) {
         StepListFragment fragment = new StepListFragment();
         Bundle args = new Bundle();
@@ -59,7 +58,11 @@ public class StepListFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new StepListAdapter(mRecipe.getSteps(), mListener));
+            if (mAdapter == null)
+                mAdapter = new StepListAdapter(mRecipe.getSteps(), mListener);
+            else
+                mAdapter.swapData(mRecipe.getSteps());
+            recyclerView.setAdapter(mAdapter);
         }
         return view;
     }
@@ -80,6 +83,8 @@ public class StepListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        mAdapter.swapData(null);
+
     }
 
     /**

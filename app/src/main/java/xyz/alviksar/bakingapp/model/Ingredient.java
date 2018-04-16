@@ -3,7 +3,7 @@ package xyz.alviksar.bakingapp.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.Parcelable.Creator;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -37,7 +37,7 @@ public class Ingredient implements Parcelable
     ;
 
     protected Ingredient(Parcel in) {
-        this.quantity = ((Double) in.readValue((Integer.class.getClassLoader())));
+        this.quantity = ((Double) in.readValue((Double.class.getClassLoader())));
         this.measure = ((String) in.readValue((String.class.getClassLoader())));
         this.ingredient = ((String) in.readValue((String.class.getClassLoader())));
     }
