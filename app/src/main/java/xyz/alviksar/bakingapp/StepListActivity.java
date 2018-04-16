@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
 import xyz.alviksar.bakingapp.model.Recipe;
 
@@ -23,6 +24,9 @@ public class StepListActivity extends AppCompatActivity {
         }
         if (mRecipe != null) {
             setTitle(mRecipe.getName());
+
+            TextView mIngradientsTextView = findViewById(R.id.tv_ingradients);
+            mIngradientsTextView.setText(mRecipe.getIngradientsString());
 
             StepListFragment stepListFragment = StepListFragment.newInstance(mRecipe);
             // TODO: Scroll to current position after rotation

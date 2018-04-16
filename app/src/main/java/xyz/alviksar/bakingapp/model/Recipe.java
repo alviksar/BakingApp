@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Recipe implements Parcelable {
     public static final String PARCEBLE_KEY = "Recipe";
@@ -142,6 +143,20 @@ public class Recipe implements Parcelable {
 
     public int describeContents() {
         return 0;
+    }
+    
+    public String getIngradientsString() {
+        if (this.ingredients == null) return "";
+        
+        StringBuilder s = new StringBuilder();
+        for (Ingredient ingredient: this.ingredients) {
+            s.append( String.format(Locale.getDefault(),"%s %s %s, \n ",
+                    ingredient.getIngredient(),
+                    ingredient.getQuantity(),
+                    ingredient.getMeasure()));
+        }
+        
+        return s.toString();
     }
 
 }
