@@ -16,13 +16,13 @@ import xyz.alviksar.bakingapp.model.Step;
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnStepClickListener}
  * interface.
  */
 public class StepListFragment extends Fragment {
 
     private Recipe mRecipe;
-    private OnListFragmentInteractionListener mListener;
+    private OnStepClickListener mListener;
     private StepListAdapter mAdapter;
 
     /**
@@ -83,11 +83,11 @@ public class StepListFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof OnStepClickListener) {
+            mListener = (OnStepClickListener) context;
         } else {
 //            throw new RuntimeException(context.toString()
-//                    + " must implement OnListFragmentInteractionListener");
+//                    + " must implement OnStepClickListener");
         }
     }
 
@@ -109,8 +109,7 @@ public class StepListFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(Step item);
+    public interface OnStepClickListener {
+        void onStepClick(Step item);
     }
 }

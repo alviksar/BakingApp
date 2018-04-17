@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import xyz.alviksar.bakingapp.model.Recipe;
+import xyz.alviksar.bakingapp.model.Step;
 
-public class StepListActivity extends AppCompatActivity {
+public class StepListActivity extends AppCompatActivity implements StepListFragment.OnStepClickListener {
 
     private Recipe mRecipe;
 
@@ -34,5 +36,10 @@ public class StepListActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    @Override
+    public void onStepClick(Step step) {
+        Toast.makeText(this, step.getDescription(), Toast.LENGTH_LONG).show();
     }
 }
