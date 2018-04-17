@@ -25,8 +25,8 @@ public class StepListActivity extends AppCompatActivity {
         if (mRecipe != null) {
             setTitle(mRecipe.getName());
 
-            TextView mIngradientsTextView = findViewById(R.id.tv_ingradients);
-            mIngradientsTextView.setText(mRecipe.getIngradientsString());
+            TextView mIngradientsTextView = findViewById(R.id.tv_ingredients);
+            mIngradientsTextView.setText(mRecipe.getIngredientsString());
 
             StepListFragment stepListFragment = StepListFragment.newInstance(mRecipe);
             // TODO: Scroll to current position after rotation

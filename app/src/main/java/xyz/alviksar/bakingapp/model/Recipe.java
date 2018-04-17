@@ -145,18 +145,25 @@ public class Recipe implements Parcelable {
         return 0;
     }
     
-    public String getIngradientsString() {
+    public String getIngredientsString() {
         if (this.ingredients == null) return "";
         
         StringBuilder s = new StringBuilder();
         for (Ingredient ingredient: this.ingredients) {
-            s.append( String.format(Locale.getDefault(),"%s %s %s, \n ",
-                    ingredient.getIngredient(),
-                    ingredient.getQuantity(),
-                    ingredient.getMeasure()));
+            if ((ingredient.getQuantity() *10) % 10 == 0) {
+                s.append(String.format(Locale.getDefault(), "%s %d %s, ",
+                        ingredient.getIngredient(),
+                        ingredient.getQuantity().intValue(),
+                        ingredient.getMeasure()));
+            } else {
+                s.append(String.format(Locale.getDefault(), "%s %s %s, ",
+                        ingredient.getIngredient(),
+                        ingredient.getQuantity(),
+                        ingredient.getMeasure()));
+            }
         }
-        
-        return s.toString();
+
+        return s.substring(0, s.length() -2) + '.';
     }
 
 }
