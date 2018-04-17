@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import xyz.alviksar.bakingapp.model.Recipe;
-import xyz.alviksar.bakingapp.model.Step;
 
 /**
  * A fragment representing a list of Items.
@@ -35,7 +34,7 @@ public class StepListFragment extends Fragment {
     public static StepListFragment newInstance(Recipe recipe) {
         StepListFragment fragment = new StepListFragment();
         Bundle args = new Bundle();
-        args.putParcelable(Recipe.PARCEBLE_KEY, recipe);
+        args.putParcelable(Recipe.PARCEBLE_NAME, recipe);
         fragment.setArguments(args);
         return fragment;
     }
@@ -45,7 +44,7 @@ public class StepListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mRecipe = getArguments().getParcelable(Recipe.PARCEBLE_KEY);
+            mRecipe = getArguments().getParcelable(Recipe.PARCEBLE_NAME);
         }
     }
 
@@ -54,8 +53,8 @@ public class StepListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_step_list, container, false);
 
-        TextView mIngradientsTextView = rootView.findViewById(R.id.tv_ingredients);
-        mIngradientsTextView.setText(mRecipe.getIngredientsString());
+        TextView mIngredientsTextView = rootView.findViewById(R.id.tv_ingredients);
+        mIngredientsTextView.setText(mRecipe.getIngredientsString());
 
         RecyclerView recyclerView = rootView.findViewById(R.id.rv_step_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
@@ -86,8 +85,8 @@ public class StepListFragment extends Fragment {
         if (context instanceof OnStepClickListener) {
             mListener = (OnStepClickListener) context;
         } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnStepClickListener");
+            throw new RuntimeException(context.toString()
+                   + " must implement OnStepClickListener");
         }
     }
 
@@ -110,6 +109,6 @@ public class StepListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnStepClickListener {
-        void onStepClick(Step item);
+        void onStepClick(int step);
     }
 }

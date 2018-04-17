@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Recipe implements Parcelable {
-    public static final String PARCEBLE_KEY = "Recipe";
+    public static final String PARCEBLE_NAME = "Recipe";
 
     @SerializedName("id")
     @Expose

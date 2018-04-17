@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -178,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     public void onClick(Recipe recipe) {
      //   Toast.makeText(MainActivity.this, recipe.getName(), Toast.LENGTH_LONG).show();
         Intent stepListIntent = new Intent(MainActivity.this, StepListActivity.class);
-        stepListIntent.putExtra(Recipe.PARCEBLE_KEY, recipe);
+        stepListIntent.putExtra(Recipe.PARCEBLE_NAME, recipe);
         startActivity(stepListIntent);
     }
 }
