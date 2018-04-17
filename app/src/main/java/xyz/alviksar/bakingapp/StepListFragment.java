@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import xyz.alviksar.bakingapp.model.Recipe;
 import xyz.alviksar.bakingapp.model.Step;
@@ -51,20 +52,31 @@ public class StepListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_step_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_step_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            if (mAdapter == null)
-                mAdapter = new StepListAdapter(mRecipe.getSteps(), mListener);
-            else
-                mAdapter.swapData(mRecipe.getSteps());
-            recyclerView.setAdapter(mAdapter);
-        }
-        return view;
+        TextView mIngradientsTextView = rootView.findViewById(R.id.tv_ingredients);
+        mIngradientsTextView.setText(mRecipe.getIngredientsString());
+
+        RecyclerView recyclerView = rootView.findViewById(R.id.rv_step_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+        if (mAdapter == null)
+            mAdapter = new StepListAdapter(mRecipe.getSteps(), mListener);
+        else
+            mAdapter.swapData(mRecipe.getSteps());
+        recyclerView.setAdapter(mAdapter);
+
+//        // Set the adapter
+//        if (rootView instanceof RecyclerView) {
+//            Context context = rootView.getContext();
+//            RecyclerView recyclerView = (RecyclerView) rootView;
+//            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+//            if (mAdapter == null)
+//                mAdapter = new StepListAdapter(mRecipe.getSteps(), mListener);
+//            else
+//                mAdapter.swapData(mRecipe.getSteps());
+//            recyclerView.setAdapter(mAdapter);
+//        }
+        return rootView;
     }
 
 
@@ -83,7 +95,7 @@ public class StepListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        mAdapter.swapData(null);
+//        mAdapter.swapData(null);
 
     }
 
