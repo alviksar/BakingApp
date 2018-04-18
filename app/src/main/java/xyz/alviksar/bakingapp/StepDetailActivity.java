@@ -31,22 +31,6 @@ public class StepDetailActivity extends AppCompatActivity {
         if (mRecipe != null) {
             setTitle(mRecipe.getName());
             moveToStep(mStepNum);
-//
-//            Step step = mRecipe.getSteps().get(mStepNum);
-//            String description = step.getDescription();
-//            String videoUrl = step.getVideoURL();
-//            StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(videoUrl, description);
-//            FragmentManager fragmentManager = getSupportFragmentManager();
-//            Fragment fragment = fragmentManager.findFragmentById(R.id.step_detail_fragment);
-//            if (fragment == null) {
-//                fragmentManager.beginTransaction()
-//                        .add(R.id.step_detail_fragment, stepDetailFragment)
-//                        .commit();
-//            } else {
-//                fragmentManager.beginTransaction()
-//                        .replace(R.id.step_detail_fragment, stepDetailFragment)
-//                        .commit();
-//            }
         }
 
     }
@@ -72,6 +56,10 @@ public class StepDetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Replaces fragment with new one after taping button.
+     * @param stepNum Current number of steps
+     */
     private void moveToStep(int stepNum) {
         Step step = mRecipe.getSteps().get(stepNum);
         String description = step.getDescription();

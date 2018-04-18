@@ -9,18 +9,23 @@
     <FrameLayout
         android:id="@+id/frame_step_video"
         android:layout_width="match_parent"
-        android:background="@color/colorLightGray"
         android:layout_height="0dp"
-        android:layout_weight="6">
+        android:layout_weight="6"
+        android:background="@color/colorLightGray">
+
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/pv_video"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </FrameLayout>
 
     <TextView
         android:id="@+id/tv_step_description"
         android:layout_width="match_parent"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-        android:textColor="@color/colorPrimaryText"
         android:layout_height="0dp"
         android:layout_margin="@dimen/text_margin"
-        android:layout_weight="4" />
+        android:layout_weight="4"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:textColor="@color/colorPrimaryText" />
 
 </LinearLayout>

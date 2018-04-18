@@ -3,11 +3,27 @@ package xyz.alviksar.bakingapp;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 
 
 /**
@@ -20,12 +36,12 @@ import android.widget.TextView;
  */
 public class StepDetailFragment extends Fragment {
 
-    private static final String ARG_VIDEOURL = "videoURL";
+    private static final String ARG_VIDEO_URL = "videoURL";
     private static final String ARG_DESCRIPTION = "description";
 
-    // TODO: Rename and change types of parameters
     private String mVideoUrl;
     private String mDescription;
+    SimpleExoPlayer mPlayer;
 
     private OnFragmentInteractionListener mListener;
 
@@ -37,15 +53,14 @@ public class StepDetailFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param videoUrl Parameter 1.
+     * @param videoUrl    Parameter 1.
      * @param description Parameter 2.
      * @return A new instance of fragment StepDetailFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static StepDetailFragment newInstance(String videoUrl, String description) {
         StepDetailFragment fragment = new StepDetailFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_VIDEOURL, videoUrl);
+        args.putString(ARG_VIDEO_URL, videoUrl);
         args.putString(ARG_DESCRIPTION, description);
         fragment.setArguments(args);
         return fragment;
@@ -55,9 +70,22 @@ public class StepDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mVideoUrl = getArguments().getString(ARG_VIDEOURL);
+            mVideoUrl = getArguments().getString(ARG_VIDEO_URL);
             mDescription = getArguments().getString(ARG_DESCRIPTION);
         }
+        // Create a default TrackSelector
+        Handler mainHandler = new Handler();
+        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+        TrackSelection.Factory videoTrackSelectionFactory =
+                new AdaptiveTrackSelection.Factory(bandwidthMeter);
+        TrackSelector trackSelector =
+                new DefaultTrackSelector(videoTrackSelectionFactory);
+
+        // Create the player
+        mPlayer =
+                ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+        mPlayer.setPlayWhenReady(true);
+
     }
 
     @Override
@@ -66,8 +94,25 @@ public class StepDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         TextView descriptionTextView = rootView.findViewById(R.id.tv_step_description);
         descriptionTextView.setText(mDescription);
-
+        // Bind the player to the view.
+        PlayerView playerView = rootView.findViewById(R.id.pv_video);
+        playerView.setPlayer(mPlayer);
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+// Measures bandwidth during playback. Can be null if not required.
+        DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+// Produces DataSource instances through which media data is loaded.
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
+                Util.getUserAgent(getContext(), "yourApplicationName"), bandwidthMeter);
+// This is the MediaSource representing the media to be played.
+        MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(Uri.parse(mVideoUrl));
+// Prepare the player with the source.
+        mPlayer.prepare(videoSource);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
