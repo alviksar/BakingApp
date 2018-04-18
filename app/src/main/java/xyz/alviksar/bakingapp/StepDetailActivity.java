@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import xyz.alviksar.bakingapp.model.Recipe;
 import xyz.alviksar.bakingapp.model.Step;
@@ -29,22 +30,63 @@ public class StepDetailActivity extends AppCompatActivity {
 
         if (mRecipe != null) {
             setTitle(mRecipe.getName());
-            Step step = mRecipe.getSteps().get(mStepNum);
-            String description = step.getDescription();
-            String videoUrl = step.getVideoURL();
-            StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(videoUrl, description);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            Fragment fragment = fragmentManager.findFragmentById(R.id.step_detail_fragment);
-            if (fragment == null) {
-                fragmentManager.beginTransaction()
-                        .add(R.id.step_detail_fragment, stepDetailFragment)
-                        .commit();
-            } else {
-                fragmentManager.beginTransaction()
-                        .replace(R.id.step_detail_fragment, stepDetailFragment)
-                        .commit();
-            }
+            moveToStep(mStepNum);
+//
+//            Step step = mRecipe.getSteps().get(mStepNum);
+//            String description = step.getDescription();
+//            String videoUrl = step.getVideoURL();
+//            StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(videoUrl, description);
+//            FragmentManager fragmentManager = getSupportFragmentManager();
+//            Fragment fragment = fragmentManager.findFragmentById(R.id.step_detail_fragment);
+//            if (fragment == null) {
+//                fragmentManager.beginTransaction()
+//                        .add(R.id.step_detail_fragment, stepDetailFragment)
+//                        .commit();
+//            } else {
+//                fragmentManager.beginTransaction()
+//                        .replace(R.id.step_detail_fragment, stepDetailFragment)
+//                        .commit();
+//            }
         }
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(Recipe.PARCEBLE_NAME, mRecipe);
+        outState.putInt(Step.PARCEBLE_NAME, mStepNum);
+        super.onSaveInstanceState(outState);
+    }
+
+    public void btnPrevClick(View view) {
+        if (mStepNum > 0) {
+            mStepNum--;
+            moveToStep(mStepNum);
+        }
+    }
+
+    public void btnNextClick(View view) {
+        if (mStepNum < mRecipe.getSteps().size()-1) {
+            mStepNum++;
+            moveToStep(mStepNum);
+        }
+    }
+
+    private void moveToStep(int stepNum) {
+        Step step = mRecipe.getSteps().get(stepNum);
+        String description = step.getDescription();
+        String videoUrl = step.getVideoURL();
+        StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(videoUrl, description);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.step_detail_fragment);
+        if (fragment == null) {
+            fragmentManager.beginTransaction()
+                    .add(R.id.step_detail_fragment, stepDetailFragment)
+                    .commit();
+        } else {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.step_detail_fragment, stepDetailFragment)
+                    .commit();
+        }
     }
 }
