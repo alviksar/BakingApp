@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,18 +74,7 @@ public class StepDetailFragment extends Fragment {
             mVideoUrl = getArguments().getString(ARG_VIDEO_URL);
             mDescription = getArguments().getString(ARG_DESCRIPTION);
         }
-        // Create a default TrackSelector
-        Handler mainHandler = new Handler();
-        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-        TrackSelection.Factory videoTrackSelectionFactory =
-                new AdaptiveTrackSelection.Factory(bandwidthMeter);
-        TrackSelector trackSelector =
-                new DefaultTrackSelector(videoTrackSelectionFactory);
 
-        // Create the player
-        mPlayer =
-                ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
-        mPlayer.setPlayWhenReady(true);
 
     }
 
@@ -96,23 +86,40 @@ public class StepDetailFragment extends Fragment {
         descriptionTextView.setText(mDescription);
         // Bind the player to the view.
         PlayerView playerView = rootView.findViewById(R.id.pv_video);
-        playerView.setPlayer(mPlayer);
+
+        if (mVideoUrl != null && !TextUtils.isEmpty(mVideoUrl)) {
+            // Create a default TrackSelector
+            BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+            TrackSelection.Factory videoTrackSelectionFactory =
+                    new AdaptiveTrackSelection.Factory(bandwidthMeter);
+            TrackSelector trackSelector =
+                    new DefaultTrackSelector(videoTrackSelectionFactory);
+            // Create the player
+            mPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+            // Measures bandwidth during playback. Can be null if not required.
+            DefaultBandwidthMeter bandwidthMeter2 = new DefaultBandwidthMeter();
+            // Produces DataSource instances through which media data is loaded.
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
+                    Util.getUserAgent(getContext(), getString(R.string.app_name)), bandwidthMeter2);
+            // This is the MediaSource representing the media to be played.
+            MediaSource videoSource = new ExtractorMediaSource
+                    .Factory(dataSourceFactory)
+                    .createMediaSource(Uri.parse(mVideoUrl));
+            // Prepare the player with the source.
+            mPlayer.prepare(videoSource);
+            mPlayer.setPlayWhenReady(true);
+            playerView.setPlayer(mPlayer);
+            playerView.setVisibility(View.VISIBLE);
+        } else {
+            playerView.setVisibility(View.GONE);
+        }
         return rootView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-// Measures bandwidth during playback. Can be null if not required.
-        DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-// Produces DataSource instances through which media data is loaded.
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
-                Util.getUserAgent(getContext(), "yourApplicationName"), bandwidthMeter);
-// This is the MediaSource representing the media to be played.
-        MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(Uri.parse(mVideoUrl));
-// Prepare the player with the source.
-        mPlayer.prepare(videoSource);
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -137,6 +144,7 @@ public class StepDetailFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        if (mPlayer != null) mPlayer.release();
     }
 
     /**
