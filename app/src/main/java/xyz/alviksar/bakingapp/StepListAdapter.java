@@ -82,7 +82,7 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
         ViewHolder(View view) {
             super(view);
             mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.tv_description);
+            mContentView = (TextView) view.findViewById(R.id.tv_short_step_description);
             view.setOnClickListener(this);
         }
 

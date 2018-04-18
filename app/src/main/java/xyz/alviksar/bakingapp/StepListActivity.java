@@ -28,8 +28,8 @@ public class StepListActivity extends AppCompatActivity implements StepListFragm
 
             StepListFragment stepListFragment = StepListFragment.newInstance(mRecipe);
             FragmentManager fragmentManager = getSupportFragmentManager();
-            Fragment fragment = getSupportFragmentManager().findFragmentById( R.id.step_list_fragment);
-            if( fragment == null) {
+            Fragment fragment = fragmentManager.findFragmentById(R.id.step_list_fragment);
+            if (fragment == null) {
                 fragmentManager.beginTransaction()
                         .add(R.id.step_list_fragment, stepListFragment)
                         .commit();
@@ -40,7 +40,7 @@ public class StepListActivity extends AppCompatActivity implements StepListFragm
 
     @Override
     public void onStepClick(int stepId) {
-      //  Toast.makeText(this, step.getDescription(), Toast.LENGTH_LONG).show();
+        //  Toast.makeText(this, step.getDescription(), Toast.LENGTH_LONG).show();
         Intent stepDetailIntent = new Intent(StepListActivity.this, StepDetailActivity.class);
         stepDetailIntent.putExtra(Step.PARCEBLE_NAME, stepId);
         stepDetailIntent.putExtra(Recipe.PARCEBLE_NAME, mRecipe);
