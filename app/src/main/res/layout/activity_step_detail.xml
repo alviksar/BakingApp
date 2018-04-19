@@ -22,12 +22,11 @@
 
     <LinearLayout
         android:id="@+id/layout_buttons"
-        android:layout_width="352dp"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:background="@color/colorPrimaryDark"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,16 +38,16 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/ic_navigate_prev"
-            android:onClick="btnPrevClick"/>
+            android:onClick="btnPrevClick"
+            android:src="@drawable/ic_navigate_prev" />
 
         <ImageButton
             android:id="@+id/btn_next_step"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/ic_navigate_next"
-            android:onClick="btnNextClick"/>
+            android:onClick="btnNextClick"
+            android:src="@drawable/ic_navigate_next" />
 
     </LinearLayout>
 
