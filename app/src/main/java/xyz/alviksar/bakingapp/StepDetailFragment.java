@@ -3,7 +3,6 @@ package xyz.alviksar.bakingapp;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,14 +14,10 @@ import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
@@ -42,7 +37,8 @@ public class StepDetailFragment extends Fragment {
 
     private String mVideoUrl;
     private String mDescription;
-    SimpleExoPlayer mPlayer;
+    private SimpleExoPlayer mPlayer;
+    private PlayerView mPlayerView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -75,6 +71,28 @@ public class StepDetailFragment extends Fragment {
             mDescription = getArguments().getString(ARG_DESCRIPTION);
         }
 
+//        if (mVideoUrl != null && !TextUtils.isEmpty(mVideoUrl)) {
+//            // Create a default TrackSelector
+//            BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+//            TrackSelection.Factory videoTrackSelectionFactory =
+//                    new AdaptiveTrackSelection.Factory(bandwidthMeter);
+//            TrackSelector trackSelector =
+//                    new DefaultTrackSelector(videoTrackSelectionFactory);
+//            // Create the player
+//            mPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+//            // Measures bandwidth during playback. Can be null if not required.
+//            DefaultBandwidthMeter bandwidthMeter2 = new DefaultBandwidthMeter();
+//            // Produces DataSource instances through which media data is loaded.
+//            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
+//                    Util.getUserAgent(getContext(), getString(R.string.app_name)), bandwidthMeter2);
+//            // This is the MediaSource representing the media to be played.
+//            MediaSource videoSource = new ExtractorMediaSource
+//                    .Factory(dataSourceFactory)
+//                    .createMediaSource(Uri.parse(mVideoUrl));
+//            // Prepare the player with the source.
+//            mPlayer.prepare(videoSource);
+//            mPlayer.setPlayWhenReady(true);
+//        }
 
     }
 
@@ -85,33 +103,14 @@ public class StepDetailFragment extends Fragment {
         TextView descriptionTextView = rootView.findViewById(R.id.tv_step_description);
         descriptionTextView.setText(mDescription);
         // Bind the player to the view.
-        PlayerView playerView = rootView.findViewById(R.id.pv_video);
+        mPlayerView = rootView.findViewById(R.id.pv_video);
 
         if (mVideoUrl != null && !TextUtils.isEmpty(mVideoUrl)) {
-            // Create a default TrackSelector
-            BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-            TrackSelection.Factory videoTrackSelectionFactory =
-                    new AdaptiveTrackSelection.Factory(bandwidthMeter);
-            TrackSelector trackSelector =
-                    new DefaultTrackSelector(videoTrackSelectionFactory);
-            // Create the player
-            mPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
-            // Measures bandwidth during playback. Can be null if not required.
-            DefaultBandwidthMeter bandwidthMeter2 = new DefaultBandwidthMeter();
-            // Produces DataSource instances through which media data is loaded.
-            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
-                    Util.getUserAgent(getContext(), getString(R.string.app_name)), bandwidthMeter2);
-            // This is the MediaSource representing the media to be played.
-            MediaSource videoSource = new ExtractorMediaSource
-                    .Factory(dataSourceFactory)
-                    .createMediaSource(Uri.parse(mVideoUrl));
-            // Prepare the player with the source.
-            mPlayer.prepare(videoSource);
-            mPlayer.setPlayWhenReady(true);
-            playerView.setPlayer(mPlayer);
-            playerView.setVisibility(View.VISIBLE);
+            initializePlayer(Uri.parse(mVideoUrl));
+            mPlayerView.setPlayer(mPlayer);
+            mPlayerView.setVisibility(View.VISIBLE);
         } else {
-            playerView.setVisibility(View.GONE);
+            mPlayerView.setVisibility(View.GONE);
         }
         return rootView;
     }
@@ -140,11 +139,43 @@ public class StepDetailFragment extends Fragment {
         }
     }
 
+    /**
+     * Initialize ExoPlayer.
+     * @param mediaUri The URI of the sample to play.
+     */
+    private void initializePlayer(Uri mediaUri) {
+        if (mPlayer == null) {
+            // Create an instance of the ExoPlayer.
+            TrackSelector trackSelector = new DefaultTrackSelector();
+            mPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+            mPlayerView.setPlayer(mPlayer);
+           // Produces DataSource instances through which media data is loaded.
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
+                    Util.getUserAgent(getContext(), getString(R.string.app_name)), null);
+            // This is the MediaSource representing the media to be played.
+            MediaSource videoSource = new ExtractorMediaSource
+                    .Factory(dataSourceFactory)
+                    .createMediaSource(mediaUri);
+            mPlayer.prepare(videoSource);
+            mPlayer.setPlayWhenReady(true);
+        }
+    }
+    /**
+     * Release player.
+     */
+    private void releasePlayer() {
+        if (mPlayer != null) {
+            mPlayer.stop();
+            mPlayer.release();
+            mPlayer = null;
+        }
+    }
+
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-        if (mPlayer != null) mPlayer.release();
+    public void onDestroy() {
+        super.onDestroy();
+        releasePlayer();
+
     }
 
     /**
