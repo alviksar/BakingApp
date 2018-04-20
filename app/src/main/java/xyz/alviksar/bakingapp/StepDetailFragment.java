@@ -3,6 +3,7 @@ package xyz.alviksar.bakingapp;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -35,10 +36,16 @@ public class StepDetailFragment extends Fragment {
     private static final String ARG_VIDEO_URL = "videoURL";
     private static final String ARG_DESCRIPTION = "description";
 
+    private static final String PLAYBACK_POSITION = "playback_position";
+    public static final String CURRENT_WINDOW_INDEX = "current_window_index";
+
     private String mVideoUrl;
     private String mDescription;
     private SimpleExoPlayer mPlayer;
     private PlayerView mPlayerView;
+
+    long mPlaybackPosition;
+    private int mCurrentWindow;
 
     private OnFragmentInteractionListener mListener;
 
@@ -67,33 +74,13 @@ public class StepDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            setmVideoUrl(getArguments().getString(ARG_VIDEO_URL));
+            mVideoUrl = getArguments().getString(ARG_VIDEO_URL);
             mDescription = getArguments().getString(ARG_DESCRIPTION);
         }
-
-//        if (mVideoUrl != null && !TextUtils.isEmpty(mVideoUrl)) {
-//            // Create a default TrackSelector
-//            BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-//            TrackSelection.Factory videoTrackSelectionFactory =
-//                    new AdaptiveTrackSelection.Factory(bandwidthMeter);
-//            TrackSelector trackSelector =
-//                    new DefaultTrackSelector(videoTrackSelectionFactory);
-//            // Create the player
-//            mPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
-//            // Measures bandwidth during playback. Can be null if not required.
-//            DefaultBandwidthMeter bandwidthMeter2 = new DefaultBandwidthMeter();
-//            // Produces DataSource instances through which media data is loaded.
-//            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
-//                    Util.getUserAgent(getContext(), getString(R.string.app_name)), bandwidthMeter2);
-//            // This is the MediaSource representing the media to be played.
-//            MediaSource videoSource = new ExtractorMediaSource
-//                    .Factory(dataSourceFactory)
-//                    .createMediaSource(Uri.parse(mVideoUrl));
-//            // Prepare the player with the source.
-//            mPlayer.prepare(videoSource);
-//            mPlayer.setPlayWhenReady(true);
-//        }
-
+        if (savedInstanceState != null) {
+            mPlaybackPosition = savedInstanceState.getLong(PLAYBACK_POSITION, 0);
+            mCurrentWindow = savedInstanceState.getInt(CURRENT_WINDOW_INDEX, 0);
+        }
     }
 
     @Override
@@ -104,9 +91,9 @@ public class StepDetailFragment extends Fragment {
         descriptionTextView.setText(mDescription);
         // Bind the player to the view.
         mPlayerView = rootView.findViewById(R.id.pv_video);
+        if (mVideoUrl != null && !TextUtils.isEmpty(mVideoUrl)) {
 
-        if (getmVideoUrl() != null && !TextUtils.isEmpty(getmVideoUrl())) {
-            initializePlayer(Uri.parse(getmVideoUrl()));
+            initializePlayer();
             mPlayerView.setPlayer(mPlayer);
             mPlayerView.setVisibility(View.VISIBLE);
         } else {
@@ -119,6 +106,14 @@ public class StepDetailFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putLong(PLAYBACK_POSITION, mPlaybackPosition);
+        outState.putInt(CURRENT_WINDOW_INDEX, mCurrentWindow);
+
+        super.onSaveInstanceState(outState);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -141,40 +136,52 @@ public class StepDetailFragment extends Fragment {
 
     /**
      * Initialize ExoPlayer.
-     * @param mediaUri The URI of the sample to play.
      */
-    private void initializePlayer(Uri mediaUri) {
+    private void initializePlayer() {
         if (mPlayer == null) {
             // Create an instance of the ExoPlayer.
             TrackSelector trackSelector = new DefaultTrackSelector();
             mPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
             mPlayerView.setPlayer(mPlayer);
-           // Produces DataSource instances through which media data is loaded.
+
+            // Produces DataSource instances through which media data is loaded.
             DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
                     Util.getUserAgent(getContext(), getString(R.string.app_name)), null);
             // This is the MediaSource representing the media to be played.
             MediaSource videoSource = new ExtractorMediaSource
                     .Factory(dataSourceFactory)
-                    .createMediaSource(mediaUri);
+                    .createMediaSource(Uri.parse(mVideoUrl));
             mPlayer.prepare(videoSource);
             mPlayer.setPlayWhenReady(true);
+            mPlayer.seekTo(mCurrentWindow, mPlaybackPosition);
         }
     }
+
     /**
      * Release player.
      */
     private void releasePlayer() {
         if (mPlayer != null) {
-            mPlayer.stop();
+            //   mPlayer.stop();
+            mPlaybackPosition = mPlayer.getCurrentPosition();
+            mCurrentWindow = mPlayer.getCurrentWindowIndex();
             mPlayer.release();
             mPlayer = null;
         }
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onResume() {
+        super.onResume();
+        initializePlayer();
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
         releasePlayer();
+
     }
 
     public String getmVideoUrl() {
