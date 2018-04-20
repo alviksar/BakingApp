@@ -67,7 +67,7 @@ public class StepDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mVideoUrl = getArguments().getString(ARG_VIDEO_URL);
+            setmVideoUrl(getArguments().getString(ARG_VIDEO_URL));
             mDescription = getArguments().getString(ARG_DESCRIPTION);
         }
 
@@ -105,8 +105,8 @@ public class StepDetailFragment extends Fragment {
         // Bind the player to the view.
         mPlayerView = rootView.findViewById(R.id.pv_video);
 
-        if (mVideoUrl != null && !TextUtils.isEmpty(mVideoUrl)) {
-            initializePlayer(Uri.parse(mVideoUrl));
+        if (getmVideoUrl() != null && !TextUtils.isEmpty(getmVideoUrl())) {
+            initializePlayer(Uri.parse(getmVideoUrl()));
             mPlayerView.setPlayer(mPlayer);
             mPlayerView.setVisibility(View.VISIBLE);
         } else {
@@ -175,7 +175,14 @@ public class StepDetailFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         releasePlayer();
+    }
 
+    public String getmVideoUrl() {
+        return mVideoUrl;
+    }
+
+    public void setmVideoUrl(String mVideoUrl) {
+        this.mVideoUrl = mVideoUrl;
     }
 
     /**

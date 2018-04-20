@@ -1,9 +1,9 @@
 package xyz.alviksar.bakingapp;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -71,13 +71,15 @@ public class StepDetailActivity extends AppCompatActivity {
         String description = step.getDescription();
         String videoUrl = step.getVideoURL();
         StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(videoUrl, description);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.step_detail_fragment);
+        StepDetailFragment fragment = (StepDetailFragment)fragmentManager.findFragmentById(R.id.step_detail_fragment);
+
         if (fragment == null) {
             fragmentManager.beginTransaction()
                     .add(R.id.step_detail_fragment, stepDetailFragment)
                     .commit();
-        } else {
+        } else if (!TextUtils.equals(fragment.getmVideoUrl() ,  videoUrl)) {
             fragmentManager.beginTransaction()
                     .replace(R.id.step_detail_fragment, stepDetailFragment)
                     .commit();
