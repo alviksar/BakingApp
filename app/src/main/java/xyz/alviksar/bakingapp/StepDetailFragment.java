@@ -11,7 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -77,24 +79,22 @@ public class StepDetailFragment extends Fragment {
             mVideoUrl = getArguments().getString(ARG_VIDEO_URL);
             mDescription = getArguments().getString(ARG_DESCRIPTION);
         }
-        if (savedInstanceState != null) {
-            mPlaybackPosition = savedInstanceState.getLong(PLAYBACK_POSITION, 0);
-            mCurrentWindow = savedInstanceState.getInt(CURRENT_WINDOW_INDEX, 0);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            mPlaybackPosition = savedInstanceState.getLong(PLAYBACK_POSITION, 0);
+            mCurrentWindow = savedInstanceState.getInt(CURRENT_WINDOW_INDEX, 0);
+        }
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         TextView descriptionTextView = rootView.findViewById(R.id.tv_step_description);
         descriptionTextView.setText(mDescription);
         // Bind the player to the view.
         mPlayerView = rootView.findViewById(R.id.pv_video);
         if (mVideoUrl != null && !TextUtils.isEmpty(mVideoUrl)) {
-
-            initializePlayer();
-            mPlayerView.setPlayer(mPlayer);
             mPlayerView.setVisibility(View.VISIBLE);
         } else {
             mPlayerView.setVisibility(View.GONE);
@@ -102,14 +102,10 @@ public class StepDetailFragment extends Fragment {
         return rootView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+
         outState.putLong(PLAYBACK_POSITION, mPlaybackPosition);
         outState.putInt(CURRENT_WINDOW_INDEX, mCurrentWindow);
 
@@ -139,22 +135,33 @@ public class StepDetailFragment extends Fragment {
      */
     private void initializePlayer() {
         if (mPlayer == null) {
-            // Create an instance of the ExoPlayer.
-            TrackSelector trackSelector = new DefaultTrackSelector();
-            mPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
-            mPlayerView.setPlayer(mPlayer);
+            if (mVideoUrl != null && !TextUtils.isEmpty(mVideoUrl)) {
 
-            // Produces DataSource instances through which media data is loaded.
-            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
-                    Util.getUserAgent(getContext(), getString(R.string.app_name)), null);
-            // This is the MediaSource representing the media to be played.
-            MediaSource videoSource = new ExtractorMediaSource
-                    .Factory(dataSourceFactory)
-                    .createMediaSource(Uri.parse(mVideoUrl));
-            mPlayer.prepare(videoSource);
-            mPlayer.setPlayWhenReady(true);
-            mPlayer.seekTo(mCurrentWindow, mPlaybackPosition);
+                // Create an instance of the ExoPlayer.
+                TrackSelector trackSelector = new DefaultTrackSelector();
+                mPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+                mPlayerView.setPlayer(mPlayer);
+
+                // Produces DataSource instances through which media data is loaded.
+                DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
+                        Util.getUserAgent(getContext(), getString(R.string.app_name)), null);
+                // This is the MediaSource representing the media to be played.
+                MediaSource videoSource = new ExtractorMediaSource
+                        .Factory(dataSourceFactory)
+                        .createMediaSource(Uri.parse(mVideoUrl));
+                mPlayer.prepare(videoSource);
+                mPlayer.setPlayWhenReady(true);
+                mPlayer.seekTo(mCurrentWindow, mPlaybackPosition);
+            }
         }
+    }
+    private void getPlaybackPosition() {
+        //   mPlayer.stop();
+        if (mPlayer.getPlaybackState() == Player.STATE_ENDED)
+            mPlaybackPosition = 0;
+        else
+            mPlaybackPosition = mPlayer.getCurrentPosition();
+        mCurrentWindow = mPlayer.getCurrentWindowIndex();
     }
 
     /**
@@ -162,13 +169,12 @@ public class StepDetailFragment extends Fragment {
      */
     private void releasePlayer() {
         if (mPlayer != null) {
-            //   mPlayer.stop();
-            mPlaybackPosition = mPlayer.getCurrentPosition();
-            mCurrentWindow = mPlayer.getCurrentWindowIndex();
+            getPlaybackPosition();
             mPlayer.release();
             mPlayer = null;
         }
     }
+
 
     @Override
     public void onResume() {
@@ -176,13 +182,12 @@ public class StepDetailFragment extends Fragment {
         initializePlayer();
     }
 
-
     @Override
     public void onPause() {
         super.onPause();
         releasePlayer();
-
     }
+
 
     public String getmVideoUrl() {
         return mVideoUrl;
