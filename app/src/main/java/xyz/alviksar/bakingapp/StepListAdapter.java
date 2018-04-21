@@ -20,7 +20,7 @@ import xyz.alviksar.bakingapp.model.Step;
 public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHolder> {
 
     private List<Step> mSteps;
-    private final OnStepClickListener mListener;
+    public final OnStepClickListener mListener;
 
     StepListAdapter(List<Step> items, OnStepClickListener listener) {
         mSteps = items;

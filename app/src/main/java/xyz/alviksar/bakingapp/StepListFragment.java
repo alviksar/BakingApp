@@ -63,18 +63,6 @@ public class StepListFragment extends Fragment {
         else
             mAdapter.swapData(mRecipe.getSteps());
         recyclerView.setAdapter(mAdapter);
-
-//        // Set the adapter
-//        if (rootView instanceof RecyclerView) {
-//            Context context = rootView.getContext();
-//            RecyclerView recyclerView = (RecyclerView) rootView;
-//            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-//            if (mAdapter == null)
-//                mAdapter = new StepListAdapter(mRecipe.getSteps(), mListener);
-//            else
-//                mAdapter.swapData(mRecipe.getSteps());
-//            recyclerView.setAdapter(mAdapter);
-//        }
         return rootView;
     }
 
@@ -86,7 +74,7 @@ public class StepListFragment extends Fragment {
             mListener = (OnStepClickListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                   + " must implement OnStepClickListener");
+                    + " must implement OnStepClickListener");
         }
     }
 

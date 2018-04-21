@@ -31,7 +31,6 @@ public class StepDetailActivity extends AppCompatActivity {
         } else {
             mRecipe = savedInstanceState.getParcelable(Recipe.PARCEBLE_NAME);
             mStepNum = savedInstanceState.getInt(Step.PARCEBLE_NAME);
-
         }
 
         if (mRecipe != null) {
