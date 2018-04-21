@@ -1,5 +1,6 @@
 package xyz.alviksar.bakingapp;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,7 @@ public class StepDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_detail);
+
         mPrevButton = findViewById(R.id.btn_prev_step);
         mNextButton = findViewById(R.id.btn_next_step);
         if (savedInstanceState == null || !savedInstanceState.containsKey(Recipe.PARCEBLE_NAME)) {
@@ -31,6 +33,12 @@ public class StepDetailActivity extends AppCompatActivity {
         } else {
             mRecipe = savedInstanceState.getParcelable(Recipe.PARCEBLE_NAME);
             mStepNum = savedInstanceState.getInt(Step.PARCEBLE_NAME);
+        }
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().hide();
+            }
         }
 
         if (mRecipe != null) {
@@ -84,9 +92,11 @@ public class StepDetailActivity extends AppCompatActivity {
                     .commit();
         }
 
-        if (stepNum == 0) mPrevButton.setVisibility(View.INVISIBLE);
-        else mPrevButton.setVisibility(View.VISIBLE);
-        if (stepNum == mRecipe.getSteps().size()-1) mNextButton.setVisibility(View.INVISIBLE);
-        else mNextButton.setVisibility(View.VISIBLE);
+        if (mNextButton != null && mPrevButton != null) {
+            if (stepNum == 0) mPrevButton.setVisibility(View.INVISIBLE);
+            else mPrevButton.setVisibility(View.VISIBLE);
+            if (stepNum == mRecipe.getSteps().size() - 1) mNextButton.setVisibility(View.INVISIBLE);
+            else mNextButton.setVisibility(View.VISIBLE);
+        }
     }
 }
