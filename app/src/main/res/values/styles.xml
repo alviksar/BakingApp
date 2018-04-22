@@ -20,4 +20,16 @@
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
+    <style name="WhiteBoldText">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textAppearance">?attr/textAppearanceListItem</item>
+    </style>
+
+    <style name="GrayNormalText">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/colorLightGray</item>
+        <item name="android:textAppearance">?attr/textAppearanceListItem</item>
+    </style>
+
 </resources>

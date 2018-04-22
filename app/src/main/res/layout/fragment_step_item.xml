@@ -13,23 +13,21 @@
 
         <TextView
             android:id="@+id/item_number"
+            style="@style/GrayNormalText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/text_margin"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textColor="@color/colorLightGray"
-            tools:text="1." />
+            tools:text="1" />
 
         <TextView
             android:id="@+id/tv_short_step_description"
+            style="@style/GrayNormalText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/text_margin"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textColor="@color/colorLightGray"
             tools:text="Step Number One" />
     </LinearLayout>
 
-    <View style="@style/DividerHorizontal"/>
+    <View style="@style/DividerHorizontal" />
 
 </LinearLayout>

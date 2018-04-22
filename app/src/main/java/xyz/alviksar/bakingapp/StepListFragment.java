@@ -59,9 +59,10 @@ public class StepListFragment extends Fragment {
         RecyclerView recyclerView = rootView.findViewById(R.id.rv_step_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         if (mAdapter == null)
-            mAdapter = new StepListAdapter(mRecipe.getSteps(), mListener);
+            mAdapter = new StepListAdapter(getContext(), mRecipe.getSteps(), mListener);
         else
             mAdapter.swapData(mRecipe.getSteps());
+        recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(mAdapter);
         return rootView;
     }

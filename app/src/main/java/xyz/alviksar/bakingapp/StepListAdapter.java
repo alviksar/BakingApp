@@ -1,5 +1,6 @@
 package xyz.alviksar.bakingapp;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,11 +20,15 @@ import xyz.alviksar.bakingapp.model.Step;
  */
 public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHolder> {
 
+    private Context mContext;
     private List<Step> mSteps;
+    private int selectedStep;
     public final OnStepClickListener mListener;
 
-    StepListAdapter(List<Step> items, OnStepClickListener listener) {
+    StepListAdapter(Context context, List<Step> items, OnStepClickListener listener) {
+        mContext = context;
         mSteps = items;
+        selectedStep = -1;
         mListener = listener;
     }
 
@@ -48,6 +53,16 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
         else
             holder.mIdView.setText("");
         holder.mContentView.setText(mSteps.get(position).getShortDescription());
+        if (position == selectedStep) {
+            holder.mIdView.setTextAppearance(mContext, R.style.WhiteBoldText);
+            holder.mContentView.setTextAppearance(mContext, R.style.WhiteBoldText);
+            holder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.colorAccent));
+
+        } else {
+            holder.mIdView.setTextAppearance(mContext, R.style.GrayNormalText);
+            holder.mContentView.setTextAppearance(mContext, R.style.GrayNormalText);
+            holder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimaryDark));
+        }
 
   //      holder.itemView.setOnClickListener(this);
 //            @Override
@@ -93,15 +108,11 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
 
         @Override
         public void onClick(View view) {
+            selectedStep = getAdapterPosition();
+            notifyDataSetChanged();
+
             if (null != mListener) {
-                int position = getAdapterPosition();
-                mListener.onStepClick(position);
-//                if (mSteps != null) {
-//                    Step step = mSteps.get(position);
-//                    if (step != null) {
-//                        mListener.onStepClick(step.getId());
-//                    }
-//                }
+                mListener.onStepClick(selectedStep);
             }
         }
     }

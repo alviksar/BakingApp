@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     private static final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net";
 
     // The recipe card width on screen in inches
-    private static final float CARD_WIDTH_INCHES = 1.4f;
+    private static final float CARD_WIDTH_INCHES = 1.7f;
 
     private RecyclerView mRecyclerView;
     private RecipeAdapter mRecipeAdapter;
