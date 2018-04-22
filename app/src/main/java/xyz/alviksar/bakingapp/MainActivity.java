@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     private void showLoading() {
         mLoadingIndicator.setVisibility(View.VISIBLE);
         mErrorMessage.setVisibility(View.GONE);
-        mRecyclerView.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
     }
 
     /**
