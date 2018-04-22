@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -77,7 +76,7 @@ public class StepDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mVideoUrl = getArguments().getString(ARG_VIDEO_URL);
-            mDescription = getArguments().getString(ARG_DESCRIPTION);
+            setmDescription(getArguments().getString(ARG_DESCRIPTION));
         }
 
     }
@@ -91,7 +90,7 @@ public class StepDetailFragment extends Fragment {
         }
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         TextView descriptionTextView = rootView.findViewById(R.id.tv_step_description);
-        descriptionTextView.setText(mDescription);
+        descriptionTextView.setText(getmDescription());
         // Bind the player to the view.
         mPlayerView = rootView.findViewById(R.id.pv_video);
         if (mVideoUrl != null && !TextUtils.isEmpty(mVideoUrl)) {
@@ -195,6 +194,14 @@ public class StepDetailFragment extends Fragment {
 
     public void setmVideoUrl(String mVideoUrl) {
         this.mVideoUrl = mVideoUrl;
+    }
+
+    public String getmDescription() {
+        return mDescription;
+    }
+
+    public void setmDescription(String mDescription) {
+        this.mDescription = mDescription;
     }
 
     /**

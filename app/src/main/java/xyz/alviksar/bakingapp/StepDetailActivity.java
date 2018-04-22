@@ -57,20 +57,21 @@ public class StepDetailActivity extends AppCompatActivity {
 
     public void btnPrevClick(View view) {
         if (mStepNum > 0) {
-            mStepNum--;
+            mStepNum = mStepNum - 1;
             moveToStep(mStepNum);
         }
     }
 
     public void btnNextClick(View view) {
-        if (mStepNum < mRecipe.getSteps().size()-1) {
-            mStepNum++;
+        if (mStepNum < mRecipe.getSteps().size() - 1) {
+            mStepNum = mStepNum + 1;
             moveToStep(mStepNum);
         }
     }
 
     /**
      * Replaces fragment with new one after taping button.
+     *
      * @param stepNum Current number of steps
      */
     private void moveToStep(int stepNum) {
@@ -80,13 +81,13 @@ public class StepDetailActivity extends AppCompatActivity {
         StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(videoUrl, description);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        StepDetailFragment fragment = (StepDetailFragment)fragmentManager.findFragmentById(R.id.step_detail_fragment);
+        StepDetailFragment fragment = (StepDetailFragment) fragmentManager.findFragmentById(R.id.step_detail_fragment);
 
         if (fragment == null) {
             fragmentManager.beginTransaction()
                     .add(R.id.step_detail_fragment, stepDetailFragment)
                     .commit();
-        } else if (!TextUtils.equals(fragment.getmVideoUrl() ,  videoUrl)) {
+        } else if (!TextUtils.equals(fragment.getmDescription(), description)) {
             fragmentManager.beginTransaction()
                     .replace(R.id.step_detail_fragment, stepDetailFragment)
                     .commit();
