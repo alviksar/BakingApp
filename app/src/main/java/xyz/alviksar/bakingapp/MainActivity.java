@@ -35,12 +35,6 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     private static final String BUNDLE_RECYCLER_LAYOUT = "MainActivity.mRecyclerView.layout";
     private Parcelable mSavedRecyclerLayoutState = null;
 
-    // https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json
-    private static final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net";
-
-    // The recipe card width on screen in inches
-    private static final float CARD_WIDTH_INCHES = 1.7f;
-
     private RecyclerView mRecyclerView;
     private RecipeAdapter mRecipeAdapter;
 
@@ -61,10 +55,10 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int mColumnWidthPixels;
         if (getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE) {
-            mColumnWidthPixels = Math.round(CARD_WIDTH_INCHES * metrics.ydpi);
+            mColumnWidthPixels = Math.round(BakingAppContract.CARD_WIDTH_INCHES * metrics.ydpi);
 
         } else {   // ORIENTATION_PORTRAIT
-            mColumnWidthPixels = Math.round(CARD_WIDTH_INCHES * metrics.xdpi);
+            mColumnWidthPixels = Math.round(BakingAppContract.CARD_WIDTH_INCHES * metrics.xdpi);
 
         }
         int columns = Math.max(1, metrics.widthPixels / mColumnWidthPixels);
@@ -78,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         mRecyclerView.setAdapter(mRecipeAdapter);
 
         Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(BakingAppContract.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create());
         Retrofit retrofit = builder.build();
         BakingAppClient bakingAppClient = retrofit.create(BakingAppClient.class);

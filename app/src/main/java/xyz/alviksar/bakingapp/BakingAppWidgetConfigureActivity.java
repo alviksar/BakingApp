@@ -41,12 +41,7 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
 
     private static final String TAG = BakingAppWidgetConfigureActivity.class.getSimpleName();
 
-    private static final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net";
-
     private static final String BUNDLE_RECYCLER_LAYOUT = "BakingAppWidgetConfigureActivity.mRecyclerView.layout";
-
-    // The recipe card width on screen in inches
-    private static final float CARD_WIDTH_INCHES = 1.7f;
 
     private RecyclerView mRecyclerView;
     private RecipeAdapter mRecipeAdapter;
@@ -59,65 +54,15 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
     private Parcelable mSavedRecyclerLayoutState = null;
 
     private static final String PREFS_NAME = "xyz.alviksar.bakingapp.BakingAppWidget";
-    private static final String PREF_PREFIX_KEY = "appwidget_";
     private static final String PREF_RECIPE_KEY = "appwidget_recipe_";
 
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-
-
-    //   EditText mAppWidgetText;
-//    View.OnClickListener mOnClickListener = new View.OnClickListener() {
-//        public void onClick(View v) {
-//            final Context context = BakingAppWidgetConfigureActivity.this;
-//
-//            // When the button is clicked, store the string locally
-//            String widgetText = mAppWidgetText.getText().toString();
-//            saveTitlePref(context, mAppWidgetId, widgetText);
-//
-//            // It is the responsibility of the configuration activity to update the app widget
-//            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-//            BakingAppWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
-//
-//            // Make sure we pass back the original appWidgetId
-//            Intent resultValue = new Intent();
-//            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
-//            setResult(RESULT_OK, resultValue);
-//            finish();
-//        }
-//    };
 
     public BakingAppWidgetConfigureActivity() {
         super();
     }
 
-//    // Write the prefix to the SharedPreferences object for this widget
-//    static void saveTitlePref(Context context, int appWidgetId, String text) {
-//        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
-//        prefs.putString(PREF_PREFIX_KEY + appWidgetId, text);
-//        prefs.apply();
-//    }
-//
-//
-//    // Read the prefix from the SharedPreferences object for this widget.
-//    // If there is no preference saved, get the default from a resource
-//    static String loadTitlePref(Context context, int appWidgetId) {
-//        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-//        String titleValue = prefs.getString(PREF_PREFIX_KEY + appWidgetId, null);
-//        if (titleValue != null) {
-//            return titleValue;
-//        } else {
-//            return context.getString(R.string.appwidget_text);
-//        }
-//    }
-
-    static void deleteTitlePref(Context context, int appWidgetId) {
-        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
-        prefs.remove(PREF_PREFIX_KEY + appWidgetId);
-        prefs.apply();
-    }
-
-
-    // Write the prefix to the SharedPreferences object for this widget
+    // Write the recipe to the SharedPreferences object for this widget
     static void saveRecipePref(Context context, int appWidgetId, Recipe recipe) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
         String recipeJson = new Gson().toJson(recipe);
@@ -125,8 +70,7 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
         prefs.apply();
     }
 
-    // Read the prefix from the SharedPreferences object for this widget.
-    // If there is no preference saved, get the default from a resource
+    // Read the recipe from the SharedPreferences object for this widget.
     static Recipe loadRecipePref(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
         String recipeJson = prefs.getString(PREF_RECIPE_KEY + appWidgetId, null);
@@ -156,10 +100,9 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int mColumnWidthPixels;
         if (getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE) {
-            mColumnWidthPixels = Math.round(CARD_WIDTH_INCHES * metrics.ydpi);
-
+            mColumnWidthPixels = Math.round(BakingAppContract.CARD_WIDTH_INCHES * metrics.ydpi);
         } else {   // ORIENTATION_PORTRAIT
-            mColumnWidthPixels = Math.round(CARD_WIDTH_INCHES * metrics.xdpi);
+            mColumnWidthPixels = Math.round(BakingAppContract.CARD_WIDTH_INCHES * metrics.xdpi);
 
         }
         int columns = Math.max(1, metrics.widthPixels / mColumnWidthPixels);
@@ -173,7 +116,7 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
         mRecyclerView.setAdapter(mRecipeAdapter);
 
         Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(BakingAppContract.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create());
         Retrofit retrofit = builder.build();
         BakingAppClient bakingAppClient = retrofit.create(BakingAppClient.class);
@@ -213,11 +156,6 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
         // out of the widget placement if the user presses the back button.
         setResult(RESULT_CANCELED);
 
-//        setContentView(R.layout.baking_app_widget_configure);
-//        mAppWidgetText = (EditText) findViewById(R.id.appwidget_text);
-//        findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
-
-
         // Find the widget id from the intent.
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -231,21 +169,15 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
             finish();
             return;
         }
-
-        //mAppWidgetText.setText(loadTitlePref(BakingAppWidgetConfigureActivity.this, mAppWidgetId));
     }
 
     @Override
     public void onClick(Recipe recipe) {
         final Context context = BakingAppWidgetConfigureActivity.this;
 
-        // When the button is clicked, store the string locally
-        //  String widgetText = mAppWidgetText.getText().toString();
-        String widgetText = recipe.getIngredientsString();
-        // saveTitlePref(context, mAppWidgetId, widgetText);
         saveRecipePref(context, mAppWidgetId, recipe);
 
-                // It is the responsibility of the configuration activity to update the app widget
+        // It is the responsibility of the configuration activity to update the app widget
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         BakingAppWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
 
