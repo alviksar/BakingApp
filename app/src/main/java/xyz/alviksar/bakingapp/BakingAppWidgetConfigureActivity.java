@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -57,10 +60,12 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
 
     private static final String PREFS_NAME = "xyz.alviksar.bakingapp.BakingAppWidget";
     private static final String PREF_PREFIX_KEY = "appwidget_";
+    private static final String PREF_RECIPE_KEY = "appwidget_recipe_";
+
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
 
- //   EditText mAppWidgetText;
+    //   EditText mAppWidgetText;
 //    View.OnClickListener mOnClickListener = new View.OnClickListener() {
 //        public void onClick(View v) {
 //            final Context context = BakingAppWidgetConfigureActivity.this;
@@ -85,28 +90,56 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
         super();
     }
 
-    // Write the prefix to the SharedPreferences object for this widget
-    static void saveTitlePref(Context context, int appWidgetId, String text) {
+//    // Write the prefix to the SharedPreferences object for this widget
+//    static void saveTitlePref(Context context, int appWidgetId, String text) {
+//        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+//        prefs.putString(PREF_PREFIX_KEY + appWidgetId, text);
+//        prefs.apply();
+//    }
+//
+//
+//    // Read the prefix from the SharedPreferences object for this widget.
+//    // If there is no preference saved, get the default from a resource
+//    static String loadTitlePref(Context context, int appWidgetId) {
+//        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+//        String titleValue = prefs.getString(PREF_PREFIX_KEY + appWidgetId, null);
+//        if (titleValue != null) {
+//            return titleValue;
+//        } else {
+//            return context.getString(R.string.appwidget_text);
+//        }
+//    }
+
+    static void deleteTitlePref(Context context, int appWidgetId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
-        prefs.putString(PREF_PREFIX_KEY + appWidgetId, text);
+        prefs.remove(PREF_PREFIX_KEY + appWidgetId);
+        prefs.apply();
+    }
+
+
+    // Write the prefix to the SharedPreferences object for this widget
+    static void saveRecipePref(Context context, int appWidgetId, Recipe recipe) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+        String recipeJson = new Gson().toJson(recipe);
+        prefs.putString(PREF_RECIPE_KEY + appWidgetId, recipeJson);
         prefs.apply();
     }
 
     // Read the prefix from the SharedPreferences object for this widget.
     // If there is no preference saved, get the default from a resource
-    static String loadTitlePref(Context context, int appWidgetId) {
+    static Recipe loadRecipePref(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-        String titleValue = prefs.getString(PREF_PREFIX_KEY + appWidgetId, null);
-        if (titleValue != null) {
-            return titleValue;
+        String recipeJson = prefs.getString(PREF_RECIPE_KEY + appWidgetId, null);
+        if (recipeJson != null) {
+            return new Gson().fromJson(recipeJson, Recipe.class);
         } else {
-            return context.getString(R.string.appwidget_text);
+            return null;
         }
     }
 
-    static void deleteTitlePref(Context context, int appWidgetId) {
+    static void deleteRecipePref(Context context, int appWidgetId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
-        prefs.remove(PREF_PREFIX_KEY + appWidgetId);
+        prefs.remove(PREF_RECIPE_KEY + appWidgetId);
         prefs.apply();
     }
 
@@ -207,11 +240,12 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
         final Context context = BakingAppWidgetConfigureActivity.this;
 
         // When the button is clicked, store the string locally
-      //  String widgetText = mAppWidgetText.getText().toString();
+        //  String widgetText = mAppWidgetText.getText().toString();
         String widgetText = recipe.getIngredientsString();
-        saveTitlePref(context, mAppWidgetId, widgetText);
+        // saveTitlePref(context, mAppWidgetId, widgetText);
+        saveRecipePref(context, mAppWidgetId, recipe);
 
-        // It is the responsibility of the configuration activity to update the app widget
+                // It is the responsibility of the configuration activity to update the app widget
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         BakingAppWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
 
@@ -257,6 +291,7 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
             mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
         }
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, mRecyclerView.getLayoutManager().onSaveInstanceState());

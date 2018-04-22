@@ -5,6 +5,8 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.widget.RemoteViews;
 
+import xyz.alviksar.bakingapp.model.Recipe;
+
 /**
  * Implementation of App Widget functionality.
  * App Widget Configuration implemented in {@link BakingAppWidgetConfigureActivity BakingAppWidgetConfigureActivity}
@@ -14,7 +16,13 @@ public class BakingAppWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        CharSequence widgetText = BakingAppWidgetConfigureActivity.loadTitlePref(context, appWidgetId);
+    //    CharSequence widgetText = BakingAppWidgetConfigureActivity.loadTitlePref(context, appWidgetId);
+        Recipe recipe = BakingAppWidgetConfigureActivity.loadRecipePref(context, appWidgetId);
+        CharSequence widgetText;
+        if (recipe != null)
+            widgetText = recipe.getIngredientsString();
+        else
+            widgetText = context.getString(R.string.appwidget_text);
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
         views.setTextViewText(R.id.appwidget_text, widgetText);
@@ -35,7 +43,8 @@ public class BakingAppWidget extends AppWidgetProvider {
     public void onDeleted(Context context, int[] appWidgetIds) {
         // When the user deletes the widget, delete the preference associated with it.
         for (int appWidgetId : appWidgetIds) {
-            BakingAppWidgetConfigureActivity.deleteTitlePref(context, appWidgetId);
+ //           BakingAppWidgetConfigureActivity.deleteTitlePref(context, appWidgetId);
+            BakingAppWidgetConfigureActivity.deleteRecipePref(context, appWidgetId);
         }
     }
 
