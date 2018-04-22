@@ -19,7 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".StepListActivity" />
+        <activity
+            android:name=".StepListActivity"
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".StepDetailActivity" />
 
         <receiver android:name=".BakingAppWidget">
