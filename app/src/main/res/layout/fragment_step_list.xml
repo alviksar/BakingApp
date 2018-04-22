@@ -35,6 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/text_margin"
                 android:textAppearance="?attr/textAppearanceListItem"
+                android:textStyle="italic"
                 tools:text="Ingradients" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
