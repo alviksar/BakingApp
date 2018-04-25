@@ -50,8 +50,10 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     // The Idling Resource which will be null in production.
     @Nullable
     private CountingIdlingResource mIdlingResource;
+
     public static final String MAIN_ACTIVITY_IDLING_RESOURCE_NAME
             = "main_activity_idling_resource_name";
+
     /**
      * Only called from test, creates and returns a new CountingIdlingResource.
      */
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         int columns = Math.max(1, metrics.widthPixels / mColumnWidthPixels);
         mLayoutManager = new GridLayoutManager(this, columns);
 
-        mRecyclerView = findViewById(R.id.my_recycler_view);
+        mRecyclerView = findViewById(R.id.rv_recipe_list);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -98,8 +100,11 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         Retrofit retrofit = builder.build();
         BakingAppClient bakingAppClient = retrofit.create(BakingAppClient.class);
         Call<List<Recipe>> call = bakingAppClient.listRecipes();
+
         mIdlingResource = new CountingIdlingResource(MAIN_ACTIVITY_IDLING_RESOURCE_NAME);
-        mIdlingResource.increment();
+
+        if (mIdlingResource != null)
+            mIdlingResource.increment();
         call.enqueue(new Callback<List<Recipe>>() {
 
             @Override
@@ -107,7 +112,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
                 List<Recipe> recipeList = response.body();
                 mRecipeAdapter.swapData(recipeList);
                 showData();
-                mIdlingResource.decrement();
+                if (mIdlingResource != null)
+                    mIdlingResource.decrement();
             }
 
             @Override
@@ -115,7 +121,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
                 Log.e(TAG, t.getMessage());
                 Toast.makeText(MainActivity.this, R.string.can_not_get_recipes,
                         Toast.LENGTH_LONG).show();
-                mIdlingResource.decrement();
+                if (mIdlingResource != null)
+                    mIdlingResource.decrement();
             }
 
         });
@@ -193,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     @Override
     public void onClick(Recipe recipe) {
-     //   Toast.makeText(MainActivity.this, recipe.getName(), Toast.LENGTH_LONG).show();
+        //   Toast.makeText(MainActivity.this, recipe.getName(), Toast.LENGTH_LONG).show();
         Intent stepListIntent = new Intent(MainActivity.this, StepListActivity.class);
         stepListIntent.putExtra(Recipe.PARCEBLE_NAME, recipe);
         startActivity(stepListIntent);

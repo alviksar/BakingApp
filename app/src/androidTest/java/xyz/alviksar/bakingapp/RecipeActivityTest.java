@@ -2,6 +2,7 @@ package xyz.alviksar.bakingapp;
 
 import android.support.annotation.NonNull;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.BoundedMatcher;
@@ -64,7 +65,7 @@ public void itemInMiddleOfList_hasSpecialText() {
 }
 */
 
-//    @Rule
+    //    @Rule
 //    public IntentsTestRule<MainActivity> mIntentsRule = new IntentsTestRule<>(
 //            MainActivity.class);
 //
@@ -72,39 +73,41 @@ public void itemInMiddleOfList_hasSpecialText() {
 //    public TaskExecutorWithIdlingResourceRule executorRule =
 //            new TaskExecutorWithIdlingResourceRule();
 // Registers any resource that needs to be synchronized with Espresso before the test is run.
-@Before
-public void registerIdlingResource() {
-    mIdlingResource = activityRule.getActivity().getIdlingResource();
-    // To prove that the test fails, omit this call:
-    Espresso.registerIdlingResources(mIdlingResource);
-}
-
-
-    @Test
-    public void loadResults() {
-//        onView(withId(R.id.my_recycler_view)).perform(scrollToPosition(3));
-//      onView(withId(R.id.my_recycler_view)).atPosition(3).check(matches(isDisplayed()));
-
-        onView(withId(R.id.my_recycler_view))
-                .perform(scrollToPosition(3))
-                .check(matches(isDisplayed()));
-        //       .check(matches(atPosition(3, hasDescendant(withText("Test Text")))));
-
-//        onView(withId(R.id.pb_loading_indicator)).check(matches(isDisplayed()));
-
-        // First, scroll to the position that needs to be matched and click on it.
-        onView(ViewMatchers.withId(R.id.my_recycler_view))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(1,
-                        click()));
+    @Before
+    public void registerIdlingResource() {
+        mIdlingResource = activityRule.getActivity().getIdlingResource();
+        // To prove that the test fails, omit this call:
+        IdlingRegistry.getInstance().register(mIdlingResource);
     }
 
-        // Remember to unregister resources when not needed to avoid malfunction.
-        @After
-        public void unregisterIdlingResource() {
-            if (mIdlingResource != null) {
-                Espresso.unregisterIdlingResources(mIdlingResource);
-            }
+    @Test
+    public void startActivity_ShowRecipeList() {
+
+        // Recipe list displayed
+        onView(withId(R.id.rv_recipe_list))
+                .perform(scrollToPosition(3))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void clickOnRecipe_ShowIngredients() {
+
+        // Scroll to the position 1 and click on it.
+        onView(ViewMatchers.withId(R.id.rv_recipe_list))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(1,
+                        click()));
+
+        // Check if next activity displayed
+        onView(ViewMatchers.withId(R.id.tv_ingredients)).check(matches(isDisplayed()));
+    }
+
+    // Remember to unregister resources when not needed to avoid malfunction.
+    @After
+    public void unregisterIdlingResource() {
+        if (mIdlingResource != null) {
+            IdlingRegistry.getInstance().register(mIdlingResource);
         }
+    }
 
 
 /*

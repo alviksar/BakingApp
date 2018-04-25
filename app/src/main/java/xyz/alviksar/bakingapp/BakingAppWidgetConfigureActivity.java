@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -108,7 +106,7 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
         int columns = Math.max(1, metrics.widthPixels / mColumnWidthPixels);
         mLayoutManager = new GridLayoutManager(this, columns);
 
-        mRecyclerView = findViewById(R.id.my_recycler_view);
+        mRecyclerView = findViewById(R.id.rv_recipe_list);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
