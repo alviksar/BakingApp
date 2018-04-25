@@ -1,8 +1,11 @@
 package xyz.alviksar.bakingapp;
 
 import android.support.annotation.NonNull;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.BoundedMatcher;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +13,8 @@ import android.view.View;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,15 +22,16 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.v4.util.Preconditions.checkNotNull;
 
 @RunWith(AndroidJUnit4.class)
 
 public class RecipeActivityTest {
+
+    private IdlingResource mIdlingResource;
 
     @Rule
     public ActivityTestRule<MainActivity> activityRule =
@@ -65,13 +71,42 @@ public void itemInMiddleOfList_hasSpecialText() {
 //    @Rule
 //    public TaskExecutorWithIdlingResourceRule executorRule =
 //            new TaskExecutorWithIdlingResourceRule();
+// Registers any resource that needs to be synchronized with Espresso before the test is run.
+@Before
+public void registerIdlingResource() {
+    mIdlingResource = activityRule.getActivity().getIdlingResource();
+    // To prove that the test fails, omit this call:
+    Espresso.registerIdlingResources(mIdlingResource);
+}
+
 
     @Test
     public void loadResults() {
 //        onView(withId(R.id.my_recycler_view)).perform(scrollToPosition(3));
-  //     onView(withId(R.id.my_recycler_view)).atPosition(3).check(matches(isDisplayed()));
+//      onView(withId(R.id.my_recycler_view)).atPosition(3).check(matches(isDisplayed()));
 
-        onView(withId(R.id.pb_loading_indicator)).check(matches(isDisplayed()));
+        onView(withId(R.id.my_recycler_view))
+                .perform(scrollToPosition(3))
+                .check(matches(isDisplayed()));
+        //       .check(matches(atPosition(3, hasDescendant(withText("Test Text")))));
+
+//        onView(withId(R.id.pb_loading_indicator)).check(matches(isDisplayed()));
+
+        // First, scroll to the position that needs to be matched and click on it.
+        onView(ViewMatchers.withId(R.id.my_recycler_view))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(1,
+                        click()));
+    }
+
+        // Remember to unregister resources when not needed to avoid malfunction.
+        @After
+        public void unregisterIdlingResource() {
+            if (mIdlingResource != null) {
+                Espresso.unregisterIdlingResources(mIdlingResource);
+            }
+        }
+
+
 /*
 https://stackoverflow.com/questions/31394569/how-to-assert-inside-a-recyclerview-in-espresso
 https://spin.atomicobject.com/2016/04/15/espresso-testing-recyclerviews/
@@ -81,11 +116,11 @@ https://github.com/dannyroa/espresso-samples/blob/master/RecyclerView/app/src/an
 //                .perform(scrollToPosition(3))
 //                .check(matches(atPosition(3, hasDescendant(withText("Test Text")))));
 
-        onView(withId(R.id.my_recycler_view))
-                .perform(RecyclerViewActions.actionOnItem(
-                        hasDescendant(withText("Text of item you want to scroll to")),
-                        click()));
-    }
+//        onView(withId(R.id.my_recycler_view))
+//                .perform(RecyclerViewActions.actionOnItem(
+//                        hasDescendant(withText("Text of item you want to scroll to")),
+//                        click()));
+
 /*
 
 onView(withId(R.id.recyclerView))

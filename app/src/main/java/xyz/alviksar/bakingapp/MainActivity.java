@@ -4,10 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
+import android.support.test.espresso.idling.CountingIdlingResource;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -43,6 +47,23 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     private ProgressBar mLoadingIndicator;
     private TextView mErrorMessage;
 
+    // The Idling Resource which will be null in production.
+    @Nullable
+    private CountingIdlingResource mIdlingResource;
+    public static final String MAIN_ACTIVITY_IDLING_RESOURCE_NAME
+            = "main_activity_idling_resource_name";
+    /**
+     * Only called from test, creates and returns a new CountingIdlingResource.
+     */
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new CountingIdlingResource(MAIN_ACTIVITY_IDLING_RESOURCE_NAME);
+        }
+        return mIdlingResource;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         Retrofit retrofit = builder.build();
         BakingAppClient bakingAppClient = retrofit.create(BakingAppClient.class);
         Call<List<Recipe>> call = bakingAppClient.listRecipes();
-
+        mIdlingResource = new CountingIdlingResource(MAIN_ACTIVITY_IDLING_RESOURCE_NAME);
+        mIdlingResource.increment();
         call.enqueue(new Callback<List<Recipe>>() {
 
             @Override
@@ -85,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
                 List<Recipe> recipeList = response.body();
                 mRecipeAdapter.swapData(recipeList);
                 showData();
+                mIdlingResource.decrement();
             }
 
             @Override
@@ -92,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
                 Log.e(TAG, t.getMessage());
                 Toast.makeText(MainActivity.this, R.string.can_not_get_recipes,
                         Toast.LENGTH_LONG).show();
+                mIdlingResource.decrement();
             }
 
         });
