@@ -76,7 +76,7 @@ public class StepDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mVideoUrl = getArguments().getString(ARG_VIDEO_URL);
-            setmDescription(getArguments().getString(ARG_DESCRIPTION));
+            setDescription(getArguments().getString(ARG_DESCRIPTION));
         }
 
     }
@@ -90,7 +90,7 @@ public class StepDetailFragment extends Fragment {
         }
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         TextView descriptionTextView = rootView.findViewById(R.id.tv_step_description);
-        descriptionTextView.setText(getmDescription());
+        descriptionTextView.setText(getDescription());
         // Bind the player to the view.
         mPlayerView = rootView.findViewById(R.id.pv_video);
         if (mVideoUrl != null && !TextUtils.isEmpty(mVideoUrl)) {
@@ -188,19 +188,19 @@ public class StepDetailFragment extends Fragment {
     }
 
 
-    public String getmVideoUrl() {
+    public String getVideoUrl() {
         return mVideoUrl;
     }
 
-    public void setmVideoUrl(String mVideoUrl) {
+    public void setVideoUrl(String mVideoUrl) {
         this.mVideoUrl = mVideoUrl;
     }
 
-    public String getmDescription() {
+    public String getDescription() {
         return mDescription;
     }
 
-    public void setmDescription(String mDescription) {
+    public void setDescription(String mDescription) {
         this.mDescription = mDescription;
     }
 

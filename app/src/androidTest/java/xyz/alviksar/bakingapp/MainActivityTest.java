@@ -26,7 +26,7 @@ public class MainActivityTest {
     private IdlingResource mIdlingResource;
 
     @Rule
-    public ActivityTestRule<MainActivity> myActivityTestRule
+    public ActivityTestRule<MainActivity> mMainActivityTestRule
             = new ActivityTestRule<>(MainActivity.class, true, false);
 
 
@@ -43,7 +43,7 @@ public class MainActivityTest {
         intent.putExtra(MainActivity.MAIN_ACTIVITY_IDLING_RESOURCE_NAME,
                 MainActivity.MAIN_ACTIVITY_IDLING_RESOURCE_NAME);
 
-        myActivityTestRule.launchActivity(intent);
+        mMainActivityTestRule.launchActivity(intent);
     }
 
     /*
@@ -73,6 +73,7 @@ public class MainActivityTest {
 
         // Check if next activity displayed
         onView(withId(R.id.tv_ingredients)).check(matches(isDisplayed()));
+
     }
 
     /*

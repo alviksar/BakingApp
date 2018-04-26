@@ -87,7 +87,7 @@ public class StepDetailActivity extends AppCompatActivity {
             fragmentManager.beginTransaction()
                     .add(R.id.step_detail_fragment, stepDetailFragment)
                     .commit();
-        } else if (!TextUtils.equals(fragment.getmDescription(), description)) {
+        } else if (!TextUtils.equals(fragment.getDescription(), description)) {
             fragmentManager.beginTransaction()
                     .replace(R.id.step_detail_fragment, stepDetailFragment)
                     .commit();

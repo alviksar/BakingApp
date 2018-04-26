@@ -6,7 +6,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.test.espresso.IdlingRegistry;
@@ -61,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
      * Only called from test, creates and returns a new CountingIdlingResource.
      */
     @VisibleForTesting
-    @NonNull
     public IdlingResource getIdlingResource() {
         return mIdlingResource;
     }

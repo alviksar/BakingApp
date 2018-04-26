@@ -60,7 +60,7 @@ public class StepListActivity extends AppCompatActivity implements StepListFragm
                         fragmentManager.beginTransaction()
                                 .add(R.id.step_detail_fragment, newStepDetailFragment)
                                 .commit();
-                    } else if (!TextUtils.equals(oldStepDetailFragment.getmVideoUrl(), videoUrl)) {
+                    } else if (!TextUtils.equals(oldStepDetailFragment.getVideoUrl(), videoUrl)) {
                         fragmentManager.beginTransaction()
                                 .replace(R.id.step_detail_fragment, newStepDetailFragment)
                                 .commit();
