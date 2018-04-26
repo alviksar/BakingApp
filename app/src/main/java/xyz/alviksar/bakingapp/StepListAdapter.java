@@ -28,7 +28,7 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
     StepListAdapter(Context context, List<Step> items, OnStepClickListener listener) {
         mContext = context;
         mSteps = items;
-        selectedStep = -1;
+        setSelectedStep(-1);
         mListener = listener;
     }
 
@@ -63,23 +63,6 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
             holder.mContentView.setTextAppearance(mContext, R.style.GrayNormalText);
             holder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimaryDark));
         }
-
-  //      holder.itemView.setOnClickListener(this);
-//            @Override
-//            public void onClick(View v) {
-//                if (null != mListener) {
-//                    int position = getAdapterPosition();
-//                    if (mSteps != null) {
-//                        Step step = mSteps.get(position);
-//                        if (step != null) {
-//                            mListener.onStepClick(step);
-//                        }
-//                    }
-//                    // Notify the active callbacks interface (the activity, if the
-//                    // fragment is attached to one) that an item has been selected.
-//                }
-//            }
-//        });
     }
 
     @Override
@@ -88,6 +71,14 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
             return mSteps.size();
         else
             return 0;
+    }
+
+    public int getSelectedStep() {
+        return selectedStep;
+    }
+
+    public void setSelectedStep(int selectedStep) {
+        this.selectedStep = selectedStep;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

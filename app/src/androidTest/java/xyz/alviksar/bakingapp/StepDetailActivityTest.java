@@ -1,6 +1,7 @@
 package xyz.alviksar.bakingapp;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -12,6 +13,7 @@ import org.junit.runner.RunWith;
 import xyz.alviksar.bakingapp.model.Recipe;
 import xyz.alviksar.bakingapp.model.Step;
 
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -51,22 +53,26 @@ public class StepDetailActivityTest {
         onView(withId(R.id.pv_video))
                 .check(matches(not(isDisplayed())));
 
-        //  Check move over step
-        onView((withId(R.id.btn_next_step))).perform(click());
-        onView((withId(R.id.btn_next_step))).perform(click());
-        onView(withId(R.id.tv_step_description))
-                .check(matches(withText(containsString("5."))));
+        if (mStepDetailActivityTestRule.getActivity().getApplicationContext()
+                .getResources().getConfiguration().orientation == ORIENTATION_PORTRAIT) {
 
-        // Check if ExoPlayer is visible for this step
-        onView(withId(R.id.pv_video))
-                .check(matches(isDisplayed()));
+            //  Check move over step
+            onView((withId(R.id.btn_next_step))).perform(click());
+            onView((withId(R.id.btn_next_step))).perform(click());
+            onView(withId(R.id.tv_step_description))
+                    .check(matches(withText(containsString("5."))));
 
-        // Check the Previous button
-        onView((withId(R.id.btn_prev_step))).perform(click());
-        onView(withId(R.id.tv_step_description))
-                .check(matches(withText(containsString("4."))));
-        onView(withId(R.id.pv_video))
-                .check(matches(not(isDisplayed())));
+            // Check if ExoPlayer is visible for this step
+            onView(withId(R.id.pv_video))
+                    .check(matches(isDisplayed()));
+
+            // Check the Previous button
+            onView((withId(R.id.btn_prev_step))).perform(click());
+            onView(withId(R.id.tv_step_description))
+                    .check(matches(withText(containsString("4."))));
+            onView(withId(R.id.pv_video))
+                    .check(matches(not(isDisplayed())));
+        }
 
     }
 

@@ -2,6 +2,9 @@ package xyz.alviksar.bakingapp;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,8 +24,34 @@ import xyz.alviksar.bakingapp.model.Recipe;
 public class StepListFragment extends Fragment {
 
     private Recipe mRecipe;
-    private OnStepClickListener mListener;
+    RecyclerView mRecyclerView;
     private StepListAdapter mAdapter;
+    private OnStepClickListener mListener;
+    private Parcelable mSavedRecyclerLayoutState = null;
+    private int mSelectedStep = -1;
+    private final static String BUNDLE_RECYCLER_LAYOUT = "StepListFragment.mRecyclerView.layout";
+    private final static String BUNDLE_SELECTED_STEP = "StepListFragment.mRecyclerView.selectedStep";
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, mRecyclerView.getLayoutManager().onSaveInstanceState());
+        outState.putInt(BUNDLE_SELECTED_STEP, mAdapter.getSelectedStep());
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mSavedRecyclerLayoutState != null) {
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
+            if (mSelectedStep > 0 ) {
+                mAdapter.setSelectedStep(mSelectedStep);
+                mRecyclerView.scrollToPosition(mSelectedStep);
+            }
+        }
+    }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -37,6 +66,19 @@ public class StepListFragment extends Fragment {
         args.putParcelable(Recipe.PARCEBLE_NAME, recipe);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(BUNDLE_RECYCLER_LAYOUT))
+                mSavedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
+            mSelectedStep = savedInstanceState.getInt(BUNDLE_SELECTED_STEP, -1);
+
+        }
     }
 
     @Override
@@ -56,14 +98,14 @@ public class StepListFragment extends Fragment {
         TextView mIngredientsTextView = rootView.findViewById(R.id.tv_ingredients);
         mIngredientsTextView.setText(mRecipe.getIngredientsString());
 
-        RecyclerView recyclerView = rootView.findViewById(R.id.rv_step_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+        mRecyclerView = rootView.findViewById(R.id.rv_step_list);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         if (mAdapter == null)
             mAdapter = new StepListAdapter(getContext(), mRecipe.getSteps(), mListener);
         else
             mAdapter.swapData(mRecipe.getSteps());
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(mAdapter);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setAdapter(mAdapter);
         return rootView;
     }
 
