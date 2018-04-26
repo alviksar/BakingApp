@@ -154,9 +154,7 @@ public class TestUtils {
 
 
     public static Recipe getTestRecipe() {
-        Recipe recipe = new Recipe();
         return new Gson().fromJson(RECIPE_JSON, Recipe.class);
-
    }
 
 }

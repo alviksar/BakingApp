@@ -44,7 +44,7 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
     private RecyclerView mRecyclerView;
     private RecipeAdapter mRecipeAdapter;
 
-    GridLayoutManager mLayoutManager;
+    private GridLayoutManager mLayoutManager;
 
     private ProgressBar mLoadingIndicator;
     private TextView mErrorMessage;
@@ -54,14 +54,14 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
     private static final String PREFS_NAME = "xyz.alviksar.bakingapp.BakingAppWidget";
     private static final String PREF_RECIPE_KEY = "appwidget_recipe_";
 
-    int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+    private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
     public BakingAppWidgetConfigureActivity() {
         super();
     }
 
     // Write the recipe to the SharedPreferences object for this widget
-    static void saveRecipePref(Context context, int appWidgetId, Recipe recipe) {
+    public static void saveRecipePref(Context context, int appWidgetId, Recipe recipe) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
         String recipeJson = new Gson().toJson(recipe);
         prefs.putString(PREF_RECIPE_KEY + appWidgetId, recipeJson);
@@ -69,7 +69,7 @@ public class BakingAppWidgetConfigureActivity extends Activity implements Recipe
     }
 
     // Read the recipe from the SharedPreferences object for this widget.
-    static Recipe loadRecipePref(Context context, int appWidgetId) {
+    public static Recipe loadRecipePref(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
         String recipeJson = prefs.getString(PREF_RECIPE_KEY + appWidgetId, null);
         if (recipeJson != null) {

@@ -1,7 +1,6 @@
 package xyz.alviksar.bakingapp;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 

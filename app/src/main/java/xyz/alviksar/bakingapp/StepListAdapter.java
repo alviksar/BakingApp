@@ -20,10 +20,10 @@ import xyz.alviksar.bakingapp.model.Step;
  */
 public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHolder> {
 
-    private Context mContext;
+    private final Context mContext;
     private List<Step> mSteps;
     private int selectedStep;
-    public final OnStepClickListener mListener;
+    private final OnStepClickListener mListener;
 
     StepListAdapter(Context context, List<Step> items, OnStepClickListener listener) {
         mContext = context;
@@ -49,7 +49,7 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         Step step = mSteps.get(position);
         if (step.getId() > 0)
-            holder.mIdView.setText(String.format(Locale.getDefault(),"%d.", step.getId()));
+            holder.mIdView.setText(String.format(Locale.getDefault(), "%d.", step.getId()));
         else
             holder.mIdView.setText("");
         holder.mContentView.setText(mSteps.get(position).getShortDescription());
@@ -87,8 +87,8 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
 
         ViewHolder(View view) {
             super(view);
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.tv_short_step_description);
+            mIdView = view.findViewById(R.id.item_number);
+            mContentView = view.findViewById(R.id.tv_short_step_description);
             view.setOnClickListener(this);
         }
 
@@ -100,11 +100,10 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
         @Override
         public void onClick(View view) {
             selectedStep = getAdapterPosition();
-            notifyDataSetChanged();
-
             if (null != mListener) {
                 mListener.onStepClick(selectedStep);
             }
+            notifyDataSetChanged();
         }
     }
 }

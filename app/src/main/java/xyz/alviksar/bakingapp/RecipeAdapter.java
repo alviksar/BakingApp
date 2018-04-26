@@ -18,7 +18,7 @@ import xyz.alviksar.bakingapp.model.Recipe;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
-    private Context mContext;
+    private final Context  mContext;
     private List<Recipe> mDataset;
 
     /**

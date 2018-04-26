@@ -5,11 +5,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 
 import xyz.alviksar.bakingapp.model.Recipe;
 import xyz.alviksar.bakingapp.model.Step;
+
+
+/**
+ * Show ingredients and steps for one recipe.
+ */
 
 public class StepListActivity extends AppCompatActivity implements StepListFragment.OnStepClickListener {
 
@@ -66,13 +70,18 @@ public class StepListActivity extends AppCompatActivity implements StepListFragm
                         fragmentManager.beginTransaction()
                                 .add(R.id.step_detail_fragment, newStepDetailFragment)
                                 .commit();
-                    } else if (!TextUtils.equals(oldStepDetailFragment.getVideoUrl(), videoUrl)) {
+                    } else {
                         fragmentManager.beginTransaction()
                                 .replace(R.id.step_detail_fragment, newStepDetailFragment)
                                 .commit();
                     }
                 }
             }
+//            else {
+//                fragmentManager.beginTransaction()
+//                        .replace(R.id.step_list_fragment, newsStepListFragment)
+//                        .commit();
+//            }
         }
     }
 

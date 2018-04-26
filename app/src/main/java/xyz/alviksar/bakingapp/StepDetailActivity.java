@@ -11,9 +11,14 @@ import android.widget.ImageButton;
 import xyz.alviksar.bakingapp.model.Recipe;
 import xyz.alviksar.bakingapp.model.Step;
 
+/**
+ * Show step video and text instructions for one step.
+ */
 
 public class StepDetailActivity extends AppCompatActivity {
+    // Current recipe
     private Recipe mRecipe;
+    // Current step
     private int mStepNum;
 
     private ImageButton mPrevButton;

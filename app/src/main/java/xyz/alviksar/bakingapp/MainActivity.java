@@ -34,6 +34,9 @@ import xyz.alviksar.bakingapp.model.Recipe;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
+/**
+ * Show a recipe card list.
+ */
 public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -44,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     private RecyclerView mRecyclerView;
     private RecipeAdapter mRecipeAdapter;
 
-    GridLayoutManager mLayoutManager;
+    private GridLayoutManager mLayoutManager;
 
     private ProgressBar mLoadingIndicator;
     private TextView mErrorMessage;
