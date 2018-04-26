@@ -1,7 +1,6 @@
 package xyz.alviksar.bakingapp;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -91,7 +90,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.mNameTextView.setText(recipe.getName());
         String img = recipe.getImage();
         if (TextUtils.isEmpty(img)) {
-            holder.mPhoto.setImageResource(R.drawable.no_image);
+   //         holder.mPhoto.setImageResource(R.drawable.no_image);
         } else {
             Picasso.with(mContext)
                     .load(img)
