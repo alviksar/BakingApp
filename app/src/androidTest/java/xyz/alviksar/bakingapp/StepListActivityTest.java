@@ -27,7 +27,7 @@ public class StepListActivityTest {
 
     @Rule
     // third parameter is set to false which means the activity is not started automatically
-    public ActivityTestRule<MainActivity> mStepDetailActivityTestRule
+    public ActivityTestRule<MainActivity> mStepListActivityTestRule
             = new ActivityTestRule<>(MainActivity.class, true, false);
 
 
@@ -38,7 +38,7 @@ public class StepListActivityTest {
     //    intent.putExtra("EXTRA", "Test");
         intent.putExtra(Recipe.PARCEBLE_NAME, recipe);
 
-        mStepDetailActivityTestRule.launchActivity(intent);
+        mStepListActivityTestRule.launchActivity(intent);
     }
 
 

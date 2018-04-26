@@ -1,9 +1,10 @@
 package xyz.alviksar.bakingapp;
 
+import android.content.Intent;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -12,17 +13,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.CoreMatchers.anything;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
@@ -31,7 +27,7 @@ public class MainActivityTest {
 
     @Rule
     public ActivityTestRule<MainActivity> myActivityTestRule
-            = new ActivityTestRule<>(MainActivity.class);
+            = new ActivityTestRule<>(MainActivity.class, true, false);
 
 
     /*
@@ -39,35 +35,44 @@ public class MainActivityTest {
      */
     @Before
     public void registerIdlingResource() {
-        mIdlingResource = myActivityTestRule.getActivity().getIdlingResource();
+        mIdlingResource
+                = new CountingIdlingResource(MainActivity.MAIN_ACTIVITY_IDLING_RESOURCE_NAME);
         // To prove that the test fails, omit this call:
         IdlingRegistry.getInstance().register(mIdlingResource);
+        Intent intent = new Intent();
+        intent.putExtra(MainActivity.MAIN_ACTIVITY_IDLING_RESOURCE_NAME,
+                MainActivity.MAIN_ACTIVITY_IDLING_RESOURCE_NAME);
+
+        myActivityTestRule.launchActivity(intent);
     }
 
     /*
     Start the activity and check if a recipe list displayed
-     */
-    @Test
-    public void startActivity_ShowRecipeList() {
-
-        onView(withId(R.id.rv_recipe_list))
-                .perform(scrollToPosition(3))
-                .check(matches(isDisplayed()));
-    }
+//     */
+//    @Test
+//    public void startActivity_ShowRecipeList() {
+//
+//        onView(withId(R.id.rv_recipe_list))
+////                .perform(scrollToPosition(0))
+//                .check(matches(isDisplayed()));
+//    }
 
     /*
      Check that an ingredients view is displayed after click on the recipe list
      */
     @Test
-    public void clickOnRecipe_ShowIngredients() {
+    public void clickOnRecipe_ShowIngredientsTextView() {
+
+//        onView(withId(R.id.rv_recipe_list))
+//                .check(matches(isDisplayed()));
 
         // Scroll to the position 1 and click on it.
-        onView(ViewMatchers.withId(R.id.rv_recipe_list))
+        onView(withId(R.id.rv_recipe_list))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1,
                         click()));
 
         // Check if next activity displayed
-        onView(ViewMatchers.withId(R.id.tv_ingredients)).check(matches(isDisplayed()));
+        onView(withId(R.id.tv_ingredients)).check(matches(isDisplayed()));
     }
 
     /*

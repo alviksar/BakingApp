@@ -9,11 +9,13 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Collection;
 import java.util.List;
 
 import retrofit2.Call;
@@ -60,9 +63,6 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     @VisibleForTesting
     @NonNull
     public IdlingResource getIdlingResource() {
-        if (mIdlingResource == null) {
-            mIdlingResource = new CountingIdlingResource(MAIN_ACTIVITY_IDLING_RESOURCE_NAME);
-        }
         return mIdlingResource;
     }
 
@@ -101,7 +101,18 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         BakingAppClient bakingAppClient = retrofit.create(BakingAppClient.class);
         Call<List<Recipe>> call = bakingAppClient.listRecipes();
 
-        if (mIdlingResource != null)
+        // For Espresso UI tests
+        Intent intent = getIntent();
+        if (intent.hasExtra(MAIN_ACTIVITY_IDLING_RESOURCE_NAME)) {
+            Collection<IdlingResource> idlingResources = IdlingRegistry.getInstance().getResources();
+            for (IdlingResource i: idlingResources
+                 ) {
+                if(TextUtils.equals(i.getName(), MAIN_ACTIVITY_IDLING_RESOURCE_NAME))
+                    mIdlingResource = (CountingIdlingResource)i;
+
+            }
+       }
+       if (mIdlingResource != null)
             mIdlingResource.increment();
 
         call.enqueue(new Callback<List<Recipe>>() {
