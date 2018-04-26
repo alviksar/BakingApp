@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     // The Idling Resource which will be null in production.
     @Nullable
-    private CountingIdlingResource mIdlingResource;
+    private CountingIdlingResource mIdlingResource = null;
 
     public static final String MAIN_ACTIVITY_IDLING_RESOURCE_NAME
             = "main_activity_idling_resource_name";
@@ -101,10 +101,9 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         BakingAppClient bakingAppClient = retrofit.create(BakingAppClient.class);
         Call<List<Recipe>> call = bakingAppClient.listRecipes();
 
-        mIdlingResource = new CountingIdlingResource(MAIN_ACTIVITY_IDLING_RESOURCE_NAME);
-
         if (mIdlingResource != null)
             mIdlingResource.increment();
+
         call.enqueue(new Callback<List<Recipe>>() {
 
             @Override
