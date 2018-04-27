@@ -1,6 +1,5 @@
 package xyz.alviksar.bakingapp;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -23,7 +23,6 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
-
 /**
  * A fragment representing a video and description for a step.
  */
@@ -32,15 +31,17 @@ public class StepDetailFragment extends Fragment {
     private static final String ARG_VIDEO_URL = "videoURL";
     private static final String ARG_DESCRIPTION = "description";
 
-    private static final String PLAYBACK_POSITION = "playback_position";
-    private static final String CURRENT_WINDOW_INDEX = "current_window_index";
+    private static final String BUNDLE_PLAYBACK_POSITION = "playback_position";
+    private static final String BUNDLE_CURRENT_WINDOW_INDEX = "current_window_index";
+    private static final String BUNDLE_PLAY_WHEN_READY_STATE = "bundle_play_when_ready_state";
 
     private String mVideoUrl;
     private String mDescription;
     private SimpleExoPlayer mPlayer;
     private PlayerView mPlayerView;
 
-    private long mPlaybackPosition;
+    private boolean mPlayWhenReadyState = true;
+    private long mPlaybackPosition = C.TIME_UNSET;
     private int mCurrentWindow;
 
     public StepDetailFragment() {
@@ -78,8 +79,10 @@ public class StepDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mPlaybackPosition = savedInstanceState.getLong(PLAYBACK_POSITION, 0);
-            mCurrentWindow = savedInstanceState.getInt(CURRENT_WINDOW_INDEX, 0);
+            mPlaybackPosition = savedInstanceState.getLong(BUNDLE_PLAYBACK_POSITION, C.TIME_UNSET);
+            mCurrentWindow = savedInstanceState.getInt(BUNDLE_CURRENT_WINDOW_INDEX, 0);
+            mPlayWhenReadyState
+                    = savedInstanceState.getBoolean(BUNDLE_PLAY_WHEN_READY_STATE, true);
         }
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         TextView descriptionTextView = rootView.findViewById(R.id.tv_step_description);
@@ -98,16 +101,16 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
 
-        outState.putLong(PLAYBACK_POSITION, mPlaybackPosition);
-        outState.putInt(CURRENT_WINDOW_INDEX, mCurrentWindow);
+        outState.putLong(BUNDLE_PLAYBACK_POSITION, mPlaybackPosition);
+        outState.putInt(BUNDLE_CURRENT_WINDOW_INDEX, mCurrentWindow);
+        outState.putBoolean(BUNDLE_PLAY_WHEN_READY_STATE, mPlayWhenReadyState);
 
         super.onSaveInstanceState(outState);
     }
 
 
-
     /**
-     * Initialize ExoPlayer.
+     * Initializes ExoPlayer.
      */
     private void initializePlayer() {
         if (mPlayer == null) {
@@ -121,18 +124,21 @@ public class StepDetailFragment extends Fragment {
                 // Produces DataSource instances through which media data is loaded.
                 DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),
                         Util.getUserAgent(getContext(), getString(R.string.app_name)), null);
+
                 // This is the MediaSource representing the media to be played.
                 MediaSource videoSource = new ExtractorMediaSource
                         .Factory(dataSourceFactory)
                         .createMediaSource(Uri.parse(mVideoUrl));
                 mPlayer.prepare(videoSource);
-                mPlayer.setPlayWhenReady(true);
-                mPlayer.seekTo(mCurrentWindow, mPlaybackPosition);
-            }
+
+                mPlayer.setPlayWhenReady(mPlayWhenReadyState);
+                if (mPlaybackPosition != C.TIME_UNSET)
+                    mPlayer.seekTo(mCurrentWindow, mPlaybackPosition);            }
         }
     }
-    private void getPlaybackPosition() {
-        //   mPlayer.stop();
+
+    private void getPlaybackState() {
+        mPlayWhenReadyState = mPlayer.getPlayWhenReady();
         if (mPlayer.getPlaybackState() == Player.STATE_ENDED)
             mPlaybackPosition = 0;
         else
@@ -141,11 +147,12 @@ public class StepDetailFragment extends Fragment {
     }
 
     /**
-     * Release player.
+     * Releases player.
      */
     private void releasePlayer() {
         if (mPlayer != null) {
-            getPlaybackPosition();
+            mPlayer.stop();
+            getPlaybackState();
             mPlayer.release();
             mPlayer = null;
         }
@@ -155,22 +162,14 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        initializePlayer();
+        if (mVideoUrl != null)
+            initializePlayer();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         releasePlayer();
-    }
-
-
-    public String getVideoUrl() {
-        return mVideoUrl;
-    }
-
-    public void setVideoUrl(String mVideoUrl) {
-        this.mVideoUrl = mVideoUrl;
     }
 
     public String getDescription() {
