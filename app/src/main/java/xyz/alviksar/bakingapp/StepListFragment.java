@@ -34,11 +34,10 @@ public class StepListFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, mRecyclerView.getLayoutManager().onSaveInstanceState());
         outState.putInt(BUNDLE_SELECTED_STEP, mAdapter.getSelectedStep());
-        super.onSaveInstanceState(outState);
     }
-
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -57,15 +56,41 @@ public class StepListFragment extends Fragment {
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
 
+        loadListState(savedInstanceState);
+        restoreListState();
+    }
+
+    /**
+     * Loads saved list state
+     *
+     * @param savedInstanceState
+     */
+    private void loadListState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(BUNDLE_RECYCLER_LAYOUT))
+            if (savedInstanceState.containsKey(BUNDLE_RECYCLER_LAYOUT)) {
                 mSavedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-            mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
-            mSelectedStep = savedInstanceState.getInt(BUNDLE_SELECTED_STEP, -1);
+            }
+            if (savedInstanceState.containsKey(BUNDLE_SELECTED_STEP))
+                mSelectedStep = savedInstanceState.getInt(BUNDLE_SELECTED_STEP, -1);
 
         }
-        super.onViewStateRestored(savedInstanceState);
+    }
+
+    /**
+     * Restores a list state
+     */
+
+    private void restoreListState() {
+        if (mSavedRecyclerLayoutState != null) {
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
+
+            mAdapter.setSelectedStep(mSelectedStep);
+            mAdapter.notifyDataSetChanged();
+            if (mSelectedStep > 0)
+                mRecyclerView.scrollToPosition(mSelectedStep);
+        }
     }
 
     @Override
@@ -95,17 +120,8 @@ public class StepListFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
 
         // Restore state
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(BUNDLE_RECYCLER_LAYOUT)) {
-                mSavedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-                mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
-            }
-            mSelectedStep = savedInstanceState.getInt(BUNDLE_SELECTED_STEP, -1);
-            mAdapter.setSelectedStep(mSelectedStep);
-            mAdapter.notifyDataSetChanged();
-            mRecyclerView.scrollToPosition(mSelectedStep);
-
-        }
+        loadListState(savedInstanceState);
+        restoreListState();
 
         return rootView;
     }
@@ -131,14 +147,7 @@ public class StepListFragment extends Fragment {
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * This interface must be implemented by activities that contain this fragment
      */
     public interface OnStepClickListener {
         void onStepClick(int step);
