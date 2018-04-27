@@ -24,7 +24,6 @@ public class StepDetailActivity extends AppCompatActivity {
     private ImageButton mPrevButton;
     private ImageButton mNextButton;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

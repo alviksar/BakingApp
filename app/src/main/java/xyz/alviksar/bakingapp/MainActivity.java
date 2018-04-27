@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.design.widget.Snackbar;
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.idling.CountingIdlingResource;
@@ -35,7 +36,7 @@ import xyz.alviksar.bakingapp.model.Recipe;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 /**
- * Show a recipe card list.
+ * Main app class than shows a recipe card list.
  */
 public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeAdapterOnClickHandler {
 
@@ -132,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
                 Log.e(TAG, t.getMessage());
                 Toast.makeText(MainActivity.this, R.string.can_not_get_recipes,
                         Toast.LENGTH_LONG).show();
+//                Snackbar.make(mRecyclerView, R.string.can_not_get_recipes
+//                        , Snackbar.LENGTH_LONG).show();
                 if (mIdlingResource != null)
                     mIdlingResource.decrement();
             }

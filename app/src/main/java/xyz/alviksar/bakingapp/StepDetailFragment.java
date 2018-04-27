@@ -1,6 +1,7 @@
 package xyz.alviksar.bakingapp;
 
 import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -132,10 +133,10 @@ public class StepDetailFragment extends Fragment {
                         .createMediaSource(Uri.parse(mVideoUrl));
                 mPlayer.prepare(videoSource);
 
-                hideSystemUi();
                 mPlayer.setPlayWhenReady(mPlayWhenReadyState);
                 if (mPlaybackPosition != C.TIME_UNSET)
-                    mPlayer.seekTo(mCurrentWindow, mPlaybackPosition);            }
+                    mPlayer.seekTo(mCurrentWindow, mPlaybackPosition);
+            }
         }
     }
 
@@ -159,10 +160,19 @@ public class StepDetailFragment extends Fragment {
         }
     }
 
-/*
+
     @Override
     public void onResume() {
         super.onResume();
+        /*
+        Show full screen video on landscape oriented phone only
+        https://stackoverflow.com/a/9308284/9682456
+         */
+        boolean isTablet = getResources().getBoolean(R.bool.isTablet);
+        if (!isTablet &&  getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE) {
+            hideSystemUi();
+        }
         initializePlayer();
     }
 
@@ -171,7 +181,7 @@ public class StepDetailFragment extends Fragment {
         super.onPause();
         releasePlayer();
     }
-*/
+
     public String getDescription() {
         return mDescription;
     }
@@ -190,36 +200,4 @@ public class StepDetailFragment extends Fragment {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (Util.SDK_INT > 23) {
-            initializePlayer();
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        hideSystemUi();
-        if ((Util.SDK_INT <= 23 || mPlayerView == null)) {
-            initializePlayer();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (Util.SDK_INT <= 23) {
-            releasePlayer();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (Util.SDK_INT > 23) {
-            releasePlayer();
-        }
-    }
 }
