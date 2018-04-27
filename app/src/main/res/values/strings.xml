@@ -12,4 +12,5 @@
     <string name="configure">Configure</string>
     <string name="previous_button">Previous step button</string>
     <string name="next_button">Next step button</string>
+    <string name="step_thumbnail_image">Step thumbnail image</string>
 </resources>

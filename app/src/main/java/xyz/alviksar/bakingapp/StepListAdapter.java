@@ -3,10 +3,14 @@ package xyz.alviksar.bakingapp;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.Locale;
@@ -48,18 +52,29 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         Step step = mSteps.get(position);
+        String strStep = "";
         if (step.getId() > 0)
-            holder.mIdView.setText(String.format(Locale.getDefault(), "%d.", step.getId()));
+            strStep = String.format(Locale.getDefault(),
+                    "%d. %s", step.getId(), mSteps.get(position).getShortDescription());
         else
-            holder.mIdView.setText("");
-        holder.mContentView.setText(mSteps.get(position).getShortDescription());
+            strStep = mSteps.get(position).getShortDescription();
+
+        holder.mContentView.setText(strStep);
+
+        String thumbnailURL = step.getThumbnailURL();
+        if (!TextUtils.isEmpty(thumbnailURL)) {
+            Picasso.with(mContext)
+                    .load(thumbnailURL)
+                    .placeholder(R.drawable.no_image)
+                    .error(R.drawable.error_image)
+                    .into(holder.mThumbnailImage);
+        }
+
         if (position == selectedStep) {
-            holder.mIdView.setTextAppearance(mContext, R.style.WhiteBoldText);
             holder.mContentView.setTextAppearance(mContext, R.style.WhiteBoldText);
             holder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.colorAccent));
 
         } else {
-            holder.mIdView.setTextAppearance(mContext, R.style.GrayNormalText);
             holder.mContentView.setTextAppearance(mContext, R.style.GrayNormalText);
             holder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimaryDark));
         }
@@ -82,12 +97,12 @@ public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final TextView mIdView;
+        private final ImageView mThumbnailImage;
         private final TextView mContentView;
 
         ViewHolder(View view) {
             super(view);
-            mIdView = view.findViewById(R.id.item_number);
+            mThumbnailImage = view.findViewById(R.id.iv_thumbnail);
             mContentView = view.findViewById(R.id.tv_short_step_description);
             view.setOnClickListener(this);
         }
